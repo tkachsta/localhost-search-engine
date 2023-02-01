@@ -1,0 +1,41 @@
+# example values
+server:
+  port: 8080
+spring:
+  main:
+    allow-circular-references: true
+  datasource:
+    username: root
+    password: Tue76Sok89
+    url: jdbc:mysql://localhost:3306/search_engine?useSSL=false&requireSSL=false&allowPublicKeyRetrieval=true
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+#        jdbc:
+#          batch_size: 5
+#        order_inserts: true
+#        order_updates: true
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+indexing-settings:
+  sites:
+    - url: http://cimus.biz
+      name: Косметика для женщин
+    - url: http://school6.m-sk.ru
+      name: Гимназия №6, г. Междуреченск
+    - url: http://playback.ru
+      name: Online-магазин телефонов
+    - url: https://www.playground.ru
+      name: Портал видеигр
+    - url: https://www.afisha.ru
+      name: Мероприятия и развлечения
+    - url: https://www.okb2-tmn.ru/
+      name: ОКБ в городе Тюмень
+    - url: https://tpu.ru/
+      name: Томский Политехнический Университет
+
+
+
+

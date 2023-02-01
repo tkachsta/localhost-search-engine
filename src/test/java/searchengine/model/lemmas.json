@@ -1,0 +1,42 @@
+[
+  {
+    "lemma": "лошадь",
+    "frequency": 75
+  },
+  {
+    "lemma": "собака",
+    "frequency": 85
+  },
+  {
+    "lemma": "кошка",
+    "frequency": 65
+  },
+  {
+    "lemma": "петух",
+    "frequency": 55
+  },
+  {
+    "lemma": "окунь",
+    "frequency": 30
+  },
+  {
+    "lemma": "лошадь",
+    "frequency": 30
+  },
+  {
+    "lemma": "собака",
+    "frequency": 75
+  },
+  {
+    "lemma": "кошка",
+    "frequency": 50
+  },
+  {
+    "lemma": "пуетух",
+    "frequency": 45
+  },
+  {
+    "lemma": "окунь",
+    "frequency": 30
+  }
+]
