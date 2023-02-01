@@ -26,7 +26,7 @@ public class ParserUtil {
     private final IndexRatioModel ratioModel;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
     private final ParserType parserType;
-    private final DetailedStatisticsItem siteStatistic;
+    private DetailedStatisticsItem siteStatistic;
     public ParserUtil(SiteRepository siteRepository,
                       PageRepository pageRepository,
                       LemmaRepository lemmaRepository,
@@ -52,8 +52,8 @@ public class ParserUtil {
 
     public ParserService createParsingInstance() {
         if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
+
             setupMultipleSitesStatistics();
-            IndexingUtil.getStatisticsData().getDetailed().add(siteStatistic);
             return new RecursiveParsingService(siteRepository, site, ratioModel, pageEntityQueueForLemmaService);
         }
         return new SinglePageParsing(pageEntity, siteEntity, lemmaRepository, indexRepository,
@@ -61,8 +61,10 @@ public class ParserUtil {
     }
     private void setupMultipleSitesStatistics() {
         ratioModel.setIndexingStatus(IndexingStatus.INDEXING);
+        siteStatistic.setStatusTime(System.currentTimeMillis());
         siteStatistic.setUrl(site.getUrl());
         siteStatistic.setName(site.getName());
         siteStatistic.setStatus(ratioModel.getIndexingStatus().toString());
+        siteStatistic.setError("");
     }
 }

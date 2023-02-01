@@ -16,6 +16,8 @@ import searchengine.services.queue.LemmaRepositoryQueueService;
 import searchengine.services.queue.PageRepositoryQueueService;
 import searchengine.services.queue.StorageQueue;
 
+import java.util.List;
+
 public class IndexingUtil implements Runnable {
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
@@ -27,8 +29,8 @@ public class IndexingUtil implements Runnable {
     private final ParserType parserType;
     private final StorageQueue storageQueue;
     private final IndexRatioModel ratioModel;
-    private final DetailedStatisticsItem siteStatistic;
     private final static StatisticsData statisticsData = new StatisticsData();
+    private DetailedStatisticsItem siteStatistic;
     public IndexingUtil(SiteRepository siteRepository,
                         PageRepository pageRepository,
                         LemmaRepository lemmaRepository,
@@ -46,7 +48,7 @@ public class IndexingUtil implements Runnable {
         this.pageEntity = pageEntity;
         this.storageQueue = new StorageQueue();
         this.ratioModel = new IndexRatioModel();
-        this.siteStatistic = new DetailedStatisticsItem();
+        synchronization();
     }
 
     @Override
@@ -112,12 +114,29 @@ public class IndexingUtil implements Runnable {
                 new LemmaRepositoryQueueService(
                         lemmaRepository, indexRepository, siteRepository,
                         siteEntity, parserThread, ratioModel, siteStatistic,
-                        storageQueue.getLemmasEntityQueueForLemmasRepository());
+                        storageQueue.getLemmasEntityQueueForLemmasRepository(), parserType);
         Thread LQS = new Thread(qs);
         LQS.start();
         return LQS;
     }
+
     public static StatisticsData getStatisticsData() {
         return statisticsData;
     }
+    private void synchronization() {
+        synchronized (IndexingUtil.getStatisticsData()) {
+            List<DetailedStatisticsItem> statisticsItems = IndexingUtil.getStatisticsData().getDetailed();
+            for (DetailedStatisticsItem item : statisticsItems) {
+                if (item.getUrl().equals(site.getUrl())) {
+                    item.resetStatistics();
+                    siteStatistic = item;
+                }
+            }
+            if (siteStatistic == null && parserType != ParserType.SINGLEPAGE) {
+                siteStatistic =  new DetailedStatisticsItem();
+                IndexingUtil.getStatisticsData().getDetailed().add(siteStatistic);
+            }
+        }
+    }
+
 }

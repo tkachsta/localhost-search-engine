@@ -7,6 +7,7 @@ import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
 import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.indexer.ParserType;
 import searchengine.services.parser.IndexRatioModel;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,6 +20,7 @@ public class LemmaRepositoryQueueService implements Runnable {
     private final IndexRatioModel indexRatioModel;
     private final Thread parserThread;
     private final BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository;
+    private final ParserType parserType;
     private final DetailedStatisticsItem siteStatistic;
     public LemmaRepositoryQueueService(LemmaRepository lemmaRepository,
                                        IndexRepository indexRepository,
@@ -27,7 +29,8 @@ public class LemmaRepositoryQueueService implements Runnable {
                                        Thread parserThread,
                                        IndexRatioModel indexRatioModel,
                                        DetailedStatisticsItem siteStatistic,
-                                       BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository) {
+                                       BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository,
+                                       ParserType parserType) {
         this.parserThread = parserThread;
         this.indexRepository = indexRepository;
         this.lemmaRepository = lemmaRepository;
@@ -36,6 +39,7 @@ public class LemmaRepositoryQueueService implements Runnable {
         this.indexRatioModel = indexRatioModel;
         this.siteStatistic = siteStatistic;
         this.lemmasEntityQueueForLemmasRepository = lemmasEntityQueueForLemmasRepository;
+        this.parserType = parserType;
     }
     @Override
     public void run() {
@@ -52,7 +56,9 @@ public class LemmaRepositoryQueueService implements Runnable {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            siteStatistic.setStatusTime(System.currentTimeMillis());
+            if (parserType != ParserType.SINGLEPAGE) {
+                siteStatistic.setStatusTime(System.currentTimeMillis());
+            }
         }
         siteTableUpdateOnFinish();
         System.out.println("Конец - LemmaRepository - " + Thread.currentThread().getName());
@@ -76,7 +82,10 @@ public class LemmaRepositoryQueueService implements Runnable {
         siteEntity.setLastError(indexRatioModel.getIndexRatioModelMessage());
         siteEntity.setStatus(indexRatioModel.getIndexingStatus());
         siteEntity.setStatusTime(LocalDateTime.now());
+        siteEntity.setLastError("");
         siteRepository.save(siteEntity);
-        siteStatistic.setStatus(indexRatioModel.getIndexingStatus().toString());
+        if (parserType != ParserType.SINGLEPAGE) {
+            siteStatistic.setStatus(indexRatioModel.getIndexingStatus().toString());
+        }
     }
 }

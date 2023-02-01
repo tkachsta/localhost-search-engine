@@ -29,21 +29,25 @@ public class StatisticsSynchronization implements Runnable {
 
     @Override
     public void run() {
-        List<SiteEntity> siteEntityList = siteRepository.findAllSites();
-        siteEntityList.forEach(site -> {
-            if (validateSiteForSynchronization(site)) {
-                DetailedStatisticsItem siteStatistic = new DetailedStatisticsItem();
-                siteStatistic.setUrl(site.getUrl());
-                siteStatistic.setName(site.getName());
-                siteStatistic.setStatus(site.getStatus().toString());
-                siteStatistic.setStatusTime(ZonedDateTime.of(site.getStatusTime(), ZoneId.systemDefault()).toInstant().toEpochMilli());
-                siteStatistic.setError(site.getLastError());
-                siteStatistic.setLemmas(lemmaRepository.findCountBySite(site));
-                siteStatistic.setPages(pageRepository.findCountBySite(site));
-                statisticsData.getDetailed().add(siteStatistic);
-            }
-        });
+        synchronized (statisticsData) {
+            List<SiteEntity> siteEntityList = siteRepository.findAllSites();
+            siteEntityList.forEach(site -> {
+                if (validateSiteForSynchronization(site)) {
+                    DetailedStatisticsItem siteStatistic = new DetailedStatisticsItem();
+                    siteStatistic.setUrl(site.getUrl());
+                    siteStatistic.setName(site.getName());
+                    statisticsData.getDetailed().add(siteStatistic);
+                    siteStatistic.setStatus(site.getStatus().toString());
+                    siteStatistic.setStatusTime(ZonedDateTime.of(site.getStatusTime(), ZoneId.systemDefault()).toInstant().toEpochMilli());
+                    siteStatistic.setError(site.getLastError());
+                    siteStatistic.setLemmas(lemmaRepository.findCountBySite(site));
+                    siteStatistic.setPages(pageRepository.findCountBySite(site));
+
+                }
+            });
+        }
     }
+
     public boolean validateSiteForSynchronization(SiteEntity site) {
         List<DetailedStatisticsItem> statisticsItems = statisticsData.getDetailed();
         for (DetailedStatisticsItem item : statisticsItems) {

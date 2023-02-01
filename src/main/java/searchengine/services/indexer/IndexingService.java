@@ -77,12 +77,6 @@ public class IndexingService {
         String pageUrl = matcher.group(2).trim();
         SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
         PageEntity pageEntity = pageRepository.findPageByPath(pageUrl);
-        if (siteEntity == null) {
-            Site site = new Site();
-            site.setName(siteUrl);
-            site.setUrl(siteUrl);
-            siteEntity = updateSiteAndPagesOnStart(site);
-        }
         if (validatePageForIndexing(siteUrl)) {
             IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
                     ParserType.SINGLEPAGE, new Site(), siteEntity, pageEntity);
@@ -125,7 +119,6 @@ public class IndexingService {
     }
 
     private boolean validatePageForIndexing(String url) { // TODO create validation service
-        System.out.println(url);
         for (Site site : sitesList.getSites()) {
             System.out.println(site.getUrl());
             if (site.getUrl().trim().compareTo(url) == 0) {

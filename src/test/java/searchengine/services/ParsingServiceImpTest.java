@@ -15,6 +15,8 @@ import searchengine.model.site.SiteRepository;
 import searchengine.services.indexer.IndexingService;
 import searchengine.services.parser.RecursiveParsingService;
 
+import java.util.List;
+
 @SpringBootTest
 @DisplayName("Запись данных парсинга сайта в БД")
 @TestClassOrder(ClassOrderer.class)
@@ -151,6 +153,23 @@ class ParsingServiceImpTest {
                 sitesList);
         ws.startMultipleSitesRecursiveIndexing();
     }
+//    @Test
+//    @Order(4)
+//    @DisplayName("Очистка странц, сайтов, лемм и индексов")
+//    public void cleanTable() {
+//        site.setUrl("https://stavmuseum.ru");
+//
+//
+//        SiteEntity siteEntity = siteRepository.findByUrl(site.getUrl());
+//        List<PageEntity> pageEntityList = pageRepository.findAllBySite(siteEntity);
+//        indexRepository.removeAllByPages(pageEntityList);
+//        lemmaRepository.removeAllBySite(siteEntity);
+//        pageRepository.removeAllBySite(siteEntity);
+//        siteRepository.removeAllByUrl(site.getUrl());
+//
+//    }
+
+
 
 
 

@@ -138,6 +138,7 @@ public class RecursiveParsingService implements ParserService {
             try {
                 doc = response.parse();
             } catch (IOException e) {
+                e.printStackTrace();
                 throw new Exception();
             }
             Elements nodes = doc.select("a");
@@ -170,6 +171,7 @@ public class RecursiveParsingService implements ParserService {
                             .timeout(20000)
                             .execute();
                 } catch (IOException e) {
+                    redis.add(url);
                     e.printStackTrace();
                 }
             }
@@ -197,8 +199,9 @@ public class RecursiveParsingService implements ParserService {
                     !url.endsWith("xlsx") &&
                     !url.contains("#") &&
                     !url.contains("///") &&
-                    !url.contains("goout")  &&
-                    !url.endsWith("xls");
+                    !url.contains("goout") &&
+                    !url.endsWith("xls")  &&
+                    !url.endsWith("rtf");
         }
         private boolean nodeIsNotDuplicate (String node) {
             if (redis.contains(node)) {

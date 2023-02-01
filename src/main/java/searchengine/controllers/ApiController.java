@@ -55,8 +55,8 @@ public class ApiController {
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
         StatisticsResponse response = statisticsService.getStatistics();
-        StatisticsSynchronization synchronization = new StatisticsSynchronization(siteRepository,
-                pageRepository,lemmaRepository);
+        StatisticsSynchronization synchronization =
+                new StatisticsSynchronization(siteRepository, pageRepository, lemmaRepository);
         synchronization.run();
         return ResponseEntity.ok(response);
     }

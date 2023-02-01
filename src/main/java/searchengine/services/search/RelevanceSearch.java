@@ -44,7 +44,7 @@ public class RelevanceSearch implements SearchService {
     public SearchResponse getSearchResult(SearchRequest searchRequest) {
         Map<String, Integer> queryLemmas = findQueryLemmas(searchRequest.getQuery());
         List<SiteEntity> siteEntityList = getSitesList(searchRequest);
-        lemmaTrimming(queryLemmas, 0.50F, siteEntityList);
+        lemmaTrimming(queryLemmas, 0.5F);
         Map<String, Integer> sortedLemmaMap = sortedLemmaMap(queryLemmas);
         Map<PageEntity, List<IndexEntity>> indexes = indexesTrimming(sortedLemmaMap, siteEntityList);
         Map<PageEntity, Float> relativeRelevance = getRelativeRelevance(indexes);
@@ -60,11 +60,9 @@ public class RelevanceSearch implements SearchService {
         List<SiteEntity> sites = new ArrayList<>();
         String site = searchRequest.getSite();
         if (site == null) {
-            System.out.println("не указан сайт");
             sitesList.getSites().forEach(record -> {
                 String siteUrl = record.getUrl();
                 SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
-                System.out.println(siteEntity.getUrl());
                 sites.add(siteEntity);
             });
             return sites;
@@ -77,14 +75,18 @@ public class RelevanceSearch implements SearchService {
     private Map<String, Integer> findQueryLemmas(String query) {
         return lemmaFinder.collectLemmas(query);
     }
-    private void lemmaTrimming(Map<String, Integer> queryLemmas, float trimmingCoef, List<SiteEntity> siteEntityList) {
+    private void lemmaTrimming(Map<String, Integer> queryLemmas, float trimmingCoef) {
+        List<SiteEntity> siteEntityList = siteRepository.findAllSites();
         float totalPages = (float) pageRepository.findCountBySites(siteEntityList);
         Set<String> lemmasToRemove = new HashSet<>();
         queryLemmas.forEach((lemma, rating) -> {
             Optional<Integer> lemmaPresence = lemmaRepository.sumOfLemmaFrequency(lemma);
             if (lemmaPresence.isPresent()) {
                 float pagesWithLemma = lemmaPresence.get();
+                System.out.println(pagesWithLemma);
+                System.out.println(totalPages);
                 if ((pagesWithLemma / totalPages) > trimmingCoef) {
+                    System.out.println(lemma);
                     lemmasToRemove.add(lemma);
                 }
             }
@@ -111,9 +113,11 @@ public class RelevanceSearch implements SearchService {
                 pageEntityList.clear();
                 indexes.forEach(index -> pageEntityList.add(index.getPage()));
                 trimmedIndexes.addAll(indexes);
-
+                System.out.println(entry);
+                System.out.println(frequency);
             });
             pageEntityList.forEach(page -> {
+                System.out.println(page.getPath());
                 List<IndexEntity> list = new ArrayList<>();
                 trimmedIndexes.forEach(index -> {
                     if (page.equals(index.getPage())) {

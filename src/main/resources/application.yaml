@@ -31,10 +31,15 @@ indexing-settings:
       name: Портал видеигр
     - url: https://www.afisha.ru
       name: Мероприятия и развлечения
-    - url: https://www.okb2-tmn.ru/
+    - url: https://www.okb2-tmn.ru
       name: ОКБ в городе Тюмень
-    - url: https://tpu.ru/
+    - url: https://tpu.ru
       name: Томский Политехнический Университет
+    - url: https://teniteatr.ru
+      name: Детский театр теней
+    - url: http://kirova47.ru
+      name: Детская городска поликлиника
+
 
 
 
