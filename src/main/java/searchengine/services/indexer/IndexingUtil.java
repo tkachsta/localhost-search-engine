@@ -1,4 +1,4 @@
-package searchengine.services.ini;
+package searchengine.services.indexer;
 import searchengine.config.Site;
 import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.dto.statistics.StatisticsData;

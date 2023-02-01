@@ -9,8 +9,8 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.IndexingStatus;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.ini.IndexingUtil;
-import searchengine.services.ini.ParserType;
+import searchengine.services.indexer.IndexingUtil;
+import searchengine.services.indexer.ParserType;
 
 import java.util.List;
 import java.util.concurrent.BlockingQueue;

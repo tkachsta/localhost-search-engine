@@ -1,4 +1,4 @@
-package searchengine.services.ini;
+package searchengine.services.indexer;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,7 @@ import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.ini.IndexingUtil;
+import searchengine.services.indexer.IndexingUtil;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;

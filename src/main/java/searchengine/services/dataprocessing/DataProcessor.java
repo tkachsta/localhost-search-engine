@@ -13,7 +13,7 @@ import searchengine.model.lemma.LemmaEntity;
 import searchengine.model.page.PageEntity;
 import searchengine.model.site.SiteEntity;
 import searchengine.services.dto.LemmaIndexCouple;
-import searchengine.services.ini.ParserType;
+import searchengine.services.indexer.ParserType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.JoinType;

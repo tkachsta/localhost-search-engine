@@ -12,7 +12,7 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.ini.IndexingService;
+import searchengine.services.indexer.IndexingService;
 import searchengine.services.parser.RecursiveParsingService;
 
 @SpringBootTest

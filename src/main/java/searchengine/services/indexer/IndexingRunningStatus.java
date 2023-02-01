@@ -1,4 +1,4 @@
-package searchengine.services.ini;
+package searchengine.services.indexer;
 
 public enum IndexingRunningStatus {
     RUNNING,

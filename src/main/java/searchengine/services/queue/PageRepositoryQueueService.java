@@ -3,7 +3,7 @@ import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.services.dto.LemmaIndexCouple;
-import searchengine.services.ini.ParserType;
+import searchengine.services.indexer.ParserType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
