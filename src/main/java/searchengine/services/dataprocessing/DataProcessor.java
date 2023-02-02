@@ -5,14 +5,14 @@ import org.springframework.transaction.annotation.Transactional;
 import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.dto.CollectedLemmas;
-import searchengine.services.dto.Index;
+import searchengine.services.dto.services.CollectedLemmas;
+import searchengine.services.dto.services.Index;
 import searchengine.model.index.IndexEntity;
 import searchengine.model.index.IndexKey;
 import searchengine.model.lemma.LemmaEntity;
 import searchengine.model.page.PageEntity;
 import searchengine.model.site.SiteEntity;
-import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.dto.services.LemmaIndexCouple;
 import searchengine.services.indexer.ParserType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -160,7 +160,6 @@ public class DataProcessor implements Runnable {
             indexes.add(index);
         });
     }
-
 
     private void singlePageCollectedLemmasProcessing (Map<String, Integer> collectedLemmas,
                                                       List<LemmaEntity> lemmaEntityList,

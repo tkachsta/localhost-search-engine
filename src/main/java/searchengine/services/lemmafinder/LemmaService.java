@@ -3,8 +3,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 import searchengine.model.page.PageEntity;
-import searchengine.services.dto.CollectedLemmas;
-import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.dto.services.CollectedLemmas;
+import searchengine.services.dto.services.LemmaIndexCouple;
 import java.util.*;
 import java.util.concurrent.BlockingQueue;
 

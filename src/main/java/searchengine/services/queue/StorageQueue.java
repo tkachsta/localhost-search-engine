@@ -2,7 +2,7 @@ package searchengine.services.queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import searchengine.model.page.PageEntity;
-import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.dto.services.LemmaIndexCouple;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;

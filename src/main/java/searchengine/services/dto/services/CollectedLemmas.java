@@ -1,4 +1,4 @@
-package searchengine.services.dto;
+package searchengine.services.dto.services;
 import lombok.Getter;
 import lombok.Setter;
 import searchengine.model.page.PageEntity;

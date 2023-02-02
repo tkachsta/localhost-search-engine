@@ -2,7 +2,7 @@ package searchengine.services.queue;
 import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
-import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.dto.services.LemmaIndexCouple;
 import searchengine.services.indexer.ParserType;
 import java.util.ArrayList;
 import java.util.List;

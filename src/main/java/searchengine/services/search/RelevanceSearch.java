@@ -44,7 +44,7 @@ public class RelevanceSearch implements SearchService {
     public SearchResponse getSearchResult(SearchRequest searchRequest) {
         Map<String, Integer> queryLemmas = findQueryLemmas(searchRequest.getQuery());
         List<SiteEntity> siteEntityList = getSitesList(searchRequest);
-        lemmaTrimming(queryLemmas, 0.5F);
+        lemmaTrimming(queryLemmas, 0.25F);
         Map<String, Integer> sortedLemmaMap = sortedLemmaMap(queryLemmas);
         Map<PageEntity, List<IndexEntity>> indexes = indexesTrimming(sortedLemmaMap, siteEntityList);
         Map<PageEntity, Float> relativeRelevance = getRelativeRelevance(indexes);
@@ -83,8 +83,6 @@ public class RelevanceSearch implements SearchService {
             Optional<Integer> lemmaPresence = lemmaRepository.sumOfLemmaFrequency(lemma);
             if (lemmaPresence.isPresent()) {
                 float pagesWithLemma = lemmaPresence.get();
-                System.out.println(pagesWithLemma);
-                System.out.println(totalPages);
                 if ((pagesWithLemma / totalPages) > trimmingCoef) {
                     System.out.println(lemma);
                     lemmasToRemove.add(lemma);

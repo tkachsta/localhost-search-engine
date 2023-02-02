@@ -118,7 +118,7 @@ public class IndexingService {
         return siteEntity;
     }
 
-    private boolean validatePageForIndexing(String url) { // TODO create validation service
+    private boolean validatePageForIndexing(String url) {
         for (Site site : sitesList.getSites()) {
             System.out.println(site.getUrl());
             if (site.getUrl().trim().compareTo(url) == 0) {

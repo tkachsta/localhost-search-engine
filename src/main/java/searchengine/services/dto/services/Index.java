@@ -1,4 +1,4 @@
-package searchengine.services.dto;
+package searchengine.services.dto.services;
 import searchengine.model.lemma.LemmaEntity;
 import searchengine.model.page.PageEntity;
 

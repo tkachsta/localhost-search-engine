@@ -15,7 +15,6 @@ import searchengine.services.parser.*;
 import searchengine.services.queue.LemmaRepositoryQueueService;
 import searchengine.services.queue.PageRepositoryQueueService;
 import searchengine.services.queue.StorageQueue;
-
 import java.util.List;
 
 public class IndexingUtil implements Runnable {

@@ -6,7 +6,7 @@ import searchengine.model.lemma.LemmaEntity;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.dto.LemmaIndexCouple;
+import searchengine.services.dto.services.LemmaIndexCouple;
 import searchengine.services.indexer.ParserType;
 import searchengine.services.parser.IndexRatioModel;
 import java.time.LocalDateTime;
