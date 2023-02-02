@@ -60,5 +60,5 @@ Since speed and performance was critical that I wanted to make application with 
 - Apache Lucene Morphology
 - Jsoup
 - MySQL
-- 
+
 ## Steps to implement
