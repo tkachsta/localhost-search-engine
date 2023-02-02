@@ -41,14 +41,24 @@ It's worth to mention that through described data pipline there are no a single 
 
 ## Key architectural approches 
 Since speed and performance was critical that I wanted to make application with highest DataBase filling speed. In order to meet that purpose I created folowing principles that reflects in architecture:
-- link web-page pre-screening increase speed greatly because we dont need to wait for timeout to expire. This is done simply by checking links ending so we only want to .html ending or no ending at all;
-- to parse pages I used Jsoup depenency and while working `Connection.Response` objest greatly increase overall speed;
-- 
+- link web-page pre-screening increase speed greatly because we dont need to wait for timeout to expire. This is done simply by checking links ending so we only want .html ending or no ending at all;
+- to parse pages I used Jsoup and while working `Connection.Response` object greatly increase overall speed;
+- create `Document` after all validation is done and the to destoy it once we submitted task for another service. Don't spin logic around `Document` object;
+- don't read from DataBase only write. All validation are spnining around parser service;
+- use concurrent threads wihch are communicates through message queue of `Queue service`. In the picutre below you may say this principle visualized
 ![image](https://user-images.githubusercontent.com/20218691/216344291-6578ba13-f676-43e7-8915-66d26702763d.png)
 
-
 ## Implemented Technologies
-
-## Algorithms and performance specifics 
-
+- JAVA Collections
+- JAVA Concurrancy
+- JAVA JDBC
+- JAVA Unit Testing
+- JAVA OOP
+- Hibernate
+- Spring Data JPA
+- SpringBoot Application
+- Apache Lucene Morphology
+- Jsoup
+- MySQL
+- 
 ## Steps to implement
