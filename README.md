@@ -58,7 +58,10 @@ Since speed and performance was critical that I wanted to make application with 
 - Spring Data JPA
 - SpringBoot Application
 - Apache Lucene Morphology
+- REST API
 - Jsoup
+- Jackson
 - MySQL
+- Maven
 
 ## Steps to implement

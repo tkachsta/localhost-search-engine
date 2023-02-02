@@ -12,10 +12,6 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-#        jdbc:
-#          batch_size: 5
-#        order_inserts: true
-#        order_updates: true
     hibernate:
       ddl-auto: update
     show-sql: true
