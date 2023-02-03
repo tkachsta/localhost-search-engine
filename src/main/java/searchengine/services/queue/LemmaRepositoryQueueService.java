@@ -54,7 +54,7 @@ public class LemmaRepositoryQueueService implements Runnable {
             try {
                 performWritingToDB(lemmaEntityList, indexEntityList);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
             if (parserType != ParserType.SINGLEPAGE) {
                 siteStatistic.setStatusTime(System.currentTimeMillis());

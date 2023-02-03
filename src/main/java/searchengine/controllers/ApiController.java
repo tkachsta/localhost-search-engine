@@ -15,6 +15,7 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteRepository;
 import searchengine.services.indexer.IndexingRunningStatus;
 import searchengine.services.indexer.IndexingService;
+import searchengine.services.indexer.IndexingUtil;
 import searchengine.services.search.SearchService;
 import searchengine.services.statistic.StatisticsService;
 import searchengine.services.synchronization.StatisticsSynchronization;
@@ -55,9 +56,11 @@ public class ApiController {
     @GetMapping("/statistics")
     public ResponseEntity<StatisticsResponse> statistics() {
         StatisticsResponse response = statisticsService.getStatistics();
-        StatisticsSynchronization synchronization =
-                new StatisticsSynchronization(siteRepository, pageRepository, lemmaRepository);
-        synchronization.run();
+        if (IndexingService.getRunningStatus() == IndexingRunningStatus.IDLE) {
+            StatisticsSynchronization synchronization =
+                    new StatisticsSynchronization(siteRepository, pageRepository, lemmaRepository);
+            synchronization.run();
+        }
         return ResponseEntity.ok(response);
     }
     @GetMapping("/search")

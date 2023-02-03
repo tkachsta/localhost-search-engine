@@ -52,7 +52,6 @@ public class ParserUtil {
 
     public ParserService createParsingInstance() {
         if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
-
             setupMultipleSitesStatistics();
             return new RecursiveParsingService(siteRepository, site, ratioModel, pageEntityQueueForLemmaService);
         }

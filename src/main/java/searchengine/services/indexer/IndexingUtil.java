@@ -123,18 +123,16 @@ public class IndexingUtil implements Runnable {
         return statisticsData;
     }
     private void synchronization() {
-        synchronized (IndexingUtil.getStatisticsData()) {
-            List<DetailedStatisticsItem> statisticsItems = IndexingUtil.getStatisticsData().getDetailed();
-            for (DetailedStatisticsItem item : statisticsItems) {
-                if (item.getUrl().equals(site.getUrl())) {
-                    item.resetStatistics();
-                    siteStatistic = item;
-                }
+        List<DetailedStatisticsItem> statisticsItems = IndexingUtil.getStatisticsData().getDetailed();
+        for (DetailedStatisticsItem item : statisticsItems) {
+            if (item.getUrl().equals(site.getUrl())) {
+                item.resetStatistics();
+                siteStatistic = item;
             }
-            if (siteStatistic == null && parserType != ParserType.SINGLEPAGE) {
-                siteStatistic =  new DetailedStatisticsItem();
-                IndexingUtil.getStatisticsData().getDetailed().add(siteStatistic);
-            }
+        }
+        if (siteStatistic == null && parserType != ParserType.SINGLEPAGE) {
+            siteStatistic =  new DetailedStatisticsItem();
+            IndexingUtil.getStatisticsData().getDetailed().add(siteStatistic);
         }
     }
 
