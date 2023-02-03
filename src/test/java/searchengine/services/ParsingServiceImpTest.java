@@ -40,7 +40,7 @@ class ParsingServiceImpTest {
 
     @BeforeEach
     public void setUp () {
-        // sitesList.clearSitesList();
+         sitesList.clearSitesList();
     }
 
     @Test
@@ -49,16 +49,6 @@ class ParsingServiceImpTest {
     public void singleSiteParsing() {
         site.setUrl("http://school6.m-sk.ru");
         site.setName("http://school6.m-sk.ru");
-
-//        site.setUrl("http://cimus.biz");
-//        site.setName("http://cimus.biz");
-
-//        site.setUrl("https://skillbox.ru");
-//        site.setName("https://skillbox.ru");
-
-//        site.setUrl("http://playback.ru");
-//        site.setName("http://playback.ru");
-
 
         IndexingService ws = new IndexingService(
                 siteRepository,
@@ -105,30 +95,11 @@ class ParsingServiceImpTest {
         thread.start();
         ws.startSingleSiteRecursiveIndexing(site);
     }
-
-
-
-
     @Test
     @Order(4)
     @DisplayName("Парсинг нескольких сайтов")
     public void multipleSitesParsing() {
         sitesList.clearSitesList();
-
-//        Site site1 = new Site();
-//        site1.setUrl("http://cimus.biz");
-//        site1.setName("cimus.biz");
-//        sitesList.addSite(site1);
-
-//        Site site2 = new Site();
-//        site2.setUrl("https://skillbox.ru");
-//        site2.setName("https://skillbox.ru");
-//        sitesList.addSite(site2);
-
-//        Site site3 = new Site();
-//        site3.setUrl("https://nikoartgallery.com");
-//        site3.setName("https://nikoartgallery.com");
-//        sitesList.addSite(site3);
 
         Site site4 = new Site();
         site4.setUrl("http://school6.m-sk.ru");
@@ -140,11 +111,6 @@ class ParsingServiceImpTest {
         site5.setName("http://playback.ru");
         sitesList.addSite(site5);
 
-//        Site site6 = new Site();
-//        site6.setUrl("https://dimonvideo.ru");
-//        site6.setName("hhttps://dimonvideo.ru");
-//        sitesList.addSite(site6);
-
         IndexingService ws = new IndexingService(
                 siteRepository,
                 pageRepository,
@@ -153,21 +119,21 @@ class ParsingServiceImpTest {
                 sitesList);
         ws.startMultipleSitesRecursiveIndexing();
     }
-//    @Test
-//    @Order(4)
-//    @DisplayName("Очистка странц, сайтов, лемм и индексов")
-//    public void cleanTable() {
-//        site.setUrl("https://stavmuseum.ru");
-//
-//
-//        SiteEntity siteEntity = siteRepository.findByUrl(site.getUrl());
-//        List<PageEntity> pageEntityList = pageRepository.findAllBySite(siteEntity);
-//        indexRepository.removeAllByPages(pageEntityList);
-//        lemmaRepository.removeAllBySite(siteEntity);
-//        pageRepository.removeAllBySite(siteEntity);
-//        siteRepository.removeAllByUrl(site.getUrl());
-//
-//    }
+    @Test
+    @Order(5)
+    @DisplayName("Очистка странц, сайтов, лемм и индексов")
+    public void cleanTable() {
+        site.setUrl("https://stavmuseum.ru");
+
+
+        SiteEntity siteEntity = siteRepository.findByUrl(site.getUrl());
+        List<PageEntity> pageEntityList = pageRepository.findAllBySite(siteEntity);
+        indexRepository.removeAllByPages(pageEntityList);
+        lemmaRepository.removeAllBySite(siteEntity);
+        pageRepository.removeAllBySite(siteEntity);
+        siteRepository.removeAllByUrl(site.getUrl());
+
+    }
 
 
 
