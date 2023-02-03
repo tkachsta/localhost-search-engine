@@ -65,3 +65,8 @@ Since speed and performance was critical that I wanted to make application with 
 - Maven
 
 ## Steps to implement
+1. Create new schema `search_engine` in MySQL WorkBench or similar tool;
+2. In `application.yaml` file set up your connection details under section `spring.datasource`;
+3. In `application.yaml` file set up websites under section `indexing_settings` you want to parse and index for searching
+4. Start SpringBott Application from `Application` class;
+5. In your web-browser enter `http://localhost:8080/`. That's it! Application ready to use on your local host.
