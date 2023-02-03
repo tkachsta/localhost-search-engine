@@ -4,6 +4,7 @@ import searchengine.model.index.IndexEntity;
 import searchengine.model.index.IndexRepository;
 import searchengine.model.lemma.LemmaEntity;
 import searchengine.model.lemma.LemmaRepository;
+import searchengine.model.site.IndexingStatus;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
 import searchengine.services.dto.services.LemmaIndexCouple;
@@ -43,7 +44,6 @@ public class LemmaRepositoryQueueService implements Runnable {
     }
     @Override
     public void run() {
-        System.out.println("Начало - LemmaRepository - " + Thread.currentThread().getName());
         while (parserThread.isAlive() || !lemmasEntityQueueForLemmasRepository.isEmpty()) {
             if (lemmasEntityQueueForLemmasRepository.isEmpty()) {
                 continue;
@@ -51,20 +51,15 @@ public class LemmaRepositoryQueueService implements Runnable {
             List<LemmaEntity> lemmaEntityList = new ArrayList<>();
             List<IndexEntity> indexEntityList = new ArrayList<>();
             createBatchToWrite(lemmaEntityList, indexEntityList);
-            try {
-                performWritingToDB(lemmaEntityList, indexEntityList);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            performWritingToDB(lemmaEntityList, indexEntityList);
             if (parserType != ParserType.SINGLEPAGE) {
                 siteStatistic.setStatusTime(System.currentTimeMillis());
             }
         }
         siteTableUpdateOnFinish();
-        System.out.println("Конец - LemmaRepository - " + Thread.currentThread().getName());
     }
     private void performWritingToDB(List<LemmaEntity> lemmaEntityList,
-                                    List<IndexEntity> indexEntityList) throws InterruptedException {
+                                    List<IndexEntity> indexEntityList) {
         lemmaRepository.saveAll(lemmaEntityList);
         indexRepository.saveAll(indexEntityList);
     }
@@ -80,12 +75,12 @@ public class LemmaRepositoryQueueService implements Runnable {
     }
     public void siteTableUpdateOnFinish() {
         siteEntity.setLastError(indexRatioModel.getIndexRatioModelMessage());
-        siteEntity.setStatus(indexRatioModel.getIndexingStatus());
+        siteEntity.setStatus(IndexingStatus.INDEXED);
         siteEntity.setStatusTime(LocalDateTime.now());
         siteEntity.setLastError("");
         siteRepository.save(siteEntity);
         if (parserType != ParserType.SINGLEPAGE) {
-            siteStatistic.setStatus(indexRatioModel.getIndexingStatus().toString());
+            siteStatistic.setStatus("INDEXED");
         }
     }
 }
