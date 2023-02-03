@@ -200,8 +200,9 @@ public class RecursiveParsingService implements ParserService {
                     !url.contains("#") &&
                     !url.contains("///") &&
                     !url.contains("goout") &&
-                    !url.endsWith("xls")  &&
-                    !url.endsWith("rtf");
+                    !url.endsWith("xls") &&
+                    !url.endsWith("rtf") &&
+                    !url.endsWith("dot");
         }
         private boolean nodeIsNotDuplicate (String node) {
             if (redis.contains(node)) {
