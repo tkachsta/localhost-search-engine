@@ -1,9 +1,12 @@
 # LocalHost Search Engine
 The purpose of the project is to create powerful application for developers as testing performance polygon for web parsing and writing its data to DataBase in highly concurrent environment. Every component (service) of solution can be changed separately with a little influence on whole system. While developing this product I constantly kept in mind ways of how to increase performance of each operation.
-Illustrating indexing process:
-![Honeycam 2023-02-03 11-30-12.gif](..%2F..%2FUsers%2Fverastas%2FDocuments%2FHoneycam%2FHoneycam%202023-02-03%2011-30-12.gif)
+<details><summary>Illustrating indexing process:</summary>
+<p>
+![Honeycam 2023-02-03 11-30-12](https://user-images.githubusercontent.com/20218691/216552025-6707aac7-f84b-4bed-9a79-1eff3f7d684b.gif)
+</p>
+</details>
 Illustrating searching process:
-![Honeycam 2023-02-03 11-35-36.gif](..%2F..%2FUsers%2Fverastas%2FDocuments%2FHoneycam%2FHoneycam%202023-02-03%2011-35-36.gif)
+![Honeycam 2023-02-03 11-35-36](https://user-images.githubusercontent.com/20218691/216552080-d6ea3d62-90cd-43c6-97d6-2085d89ca21a.gif)
 
 ## Product Description
 From user standpoint the product follows below value stream:
