@@ -20,6 +20,9 @@ public class RecursiveParsingService implements ParserService {
     private final Site site;
     private final IndexRatioModel ratioModel;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
+    private static final String[] forbiddenPageEndings = new String[]{"jpg", "jpeg", "JPG", "PDF", "pdf", "png",
+            "PNG", "pptx", "docx", "doc", "rar", "avi", "XLSX", "xlsx", "pdf.sig", "zip", "mp4", "MP4", "ppt",
+            "#", "///", "goout"};
     private final Set<String> redis = Collections.synchronizedSet(new HashSet<>());
 
     public RecursiveParsingService(SiteRepository siteRepository,
@@ -132,22 +135,21 @@ public class RecursiveParsingService implements ParserService {
                 }
             }
         }
-        private Set<String> getChildrenNodes(Connection.Response response) throws Exception {
+        private Set<String> getChildrenNodes(Connection.Response response) {
             Document doc;
             Set<String> childrenNodes = new HashSet<>();
             try {
                 doc = response.parse();
+                Elements nodes = doc.select("a");
+                nodes.forEach(n -> {
+                    String page = n.attr("abs:href");
+                    if (nodeIsCleanForProcessing(page)) {
+                        childrenNodes.add(page);
+                    }
+                });
             } catch (IOException e) {
                 e.printStackTrace();
-                throw new Exception();
             }
-            Elements nodes = doc.select("a");
-            nodes.forEach(n -> {
-                String page = n.attr("abs:href");
-                if (nodeIsCleanForProcessing(page)) {
-                    childrenNodes.add(page);
-                }
-            });
             return childrenNodes;
         }
         private PageEntity collectInformationOfPage(Connection.Response response) {
@@ -159,8 +161,7 @@ public class RecursiveParsingService implements ParserService {
             return page;
         }
         private Connection.Response getPageResponse(String url)  {
-            if (url.startsWith(site.getUrl()) &&
-                    nodeIsCleanForProcessing(url)) {
+            if (nodeIsCleanForProcessing(url)) {
                 try {
                     return  Jsoup
                             .connect(url)
@@ -178,31 +179,12 @@ public class RecursiveParsingService implements ParserService {
             return null;
         }
         private boolean nodeIsCleanForProcessing (String url) {
-            return  !url.endsWith("jpg") &&
-                    !url.endsWith("pdf") &&
-                    !url.endsWith("jpeg") &&
-                    !url.endsWith("JPG") &&
-                    !url.endsWith("png") &&
-                    !url.endsWith("PNG") &&
-                    !url.endsWith("pptx") &&
-                    !url.endsWith("docx") &&
-                    !url.endsWith("PDF") &&
-                    !url.endsWith("rar") &&
-                    !url.endsWith("avi") &&
-                    !url.endsWith("XLSX") &&
-                    !url.endsWith("pdf.sig") &&
-                    !url.endsWith("zip") &&
-                    !url.endsWith("mp4") &&
-                    !url.endsWith("doc") &&
-                    !url.endsWith("ppt") &&
-                    !url.endsWith("MP4") &&
-                    !url.endsWith("xlsx") &&
-                    !url.contains("#") &&
-                    !url.contains("///") &&
-                    !url.contains("goout") &&
-                    !url.endsWith("xls") &&
-                    !url.endsWith("rtf") &&
-                    !url.endsWith("dot");
+            for (String property : forbiddenPageEndings) {
+                if (url.endsWith(property) || !url.startsWith(site.getUrl())) {
+                    return false;
+                }
+            }
+            return true;
         }
         private boolean nodeIsNotDuplicate (String node) {
             if (redis.contains(node)) {
@@ -211,6 +193,7 @@ public class RecursiveParsingService implements ParserService {
             redis.add(node);
             return true;
         }
+
 
 
     }

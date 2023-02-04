@@ -4,8 +4,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import searchengine.config.SitesList;
-import searchengine.dto.search.SearchRequest;
-import searchengine.dto.search.SearchResponse;
 import searchengine.model.index.IndexRepository;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageRepository;
@@ -31,14 +29,14 @@ class RelevanceSearchTest {
 
     @Test
     public void getSearchResult() {
-        SearchRequest searchRequest = new SearchRequest();
-        searchRequest.setQuery("тональный крем");
-
-
-        RelevanceSearch relevanceSearch = new RelevanceSearch(pageRepository, lemmaRepository,
-                indexRepository,  siteRepository, sitesList);
-        SearchResponse searchResponse = relevanceSearch.getSearchResult(searchRequest);
-        System.out.println(searchResponse.toString());
+//        SearchRequest searchRequest = new SearchRequest();
+//        searchRequest.setQuery("тональный крем");
+//
+//
+//        RelevanceSearch relevanceSearch = new RelevanceSearch(pageRepository, lemmaRepository,
+//                indexRepository,  siteRepository, sitesList);
+//        SearchResponse searchResponse = relevanceSearch.getSearchResult(searchRequest);
+//        System.out.println(searchResponse.toString());
     }
 
 

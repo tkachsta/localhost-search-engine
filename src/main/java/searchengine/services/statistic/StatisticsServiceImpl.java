@@ -16,7 +16,7 @@ public class StatisticsServiceImpl implements StatisticsService {
         StatisticsData statisticsData = IndexingUtil.getStatisticsData();
         List<DetailedStatisticsItem> detailed = statisticsData.getDetailed();
         TotalStatistics total = statisticsData.getTotal();
-        StatisticsResponse response = new StatisticsResponse();
+        StatisticsResponse response = null;
         int pages = 0;
         int lemmas = 0;
         if (detailed != null) {
@@ -28,8 +28,7 @@ public class StatisticsServiceImpl implements StatisticsService {
             total.setPages(pages);
             total.setLemmas(lemmas);
             total.setIndexing(true);
-            response.setStatistics(statisticsData);
-            response.setResult(true);
+            response = new StatisticsResponse(true, statisticsData);
         }
         return response;
     }

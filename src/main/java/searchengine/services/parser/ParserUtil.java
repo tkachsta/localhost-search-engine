@@ -1,5 +1,4 @@
 package searchengine.services.parser;
-
 import searchengine.config.Site;
 import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.model.index.IndexRepository;
@@ -9,9 +8,7 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.IndexingStatus;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.indexer.IndexingUtil;
 import searchengine.services.indexer.ParserType;
-
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -26,7 +23,7 @@ public class ParserUtil {
     private final IndexRatioModel ratioModel;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
     private final ParserType parserType;
-    private DetailedStatisticsItem siteStatistic;
+    private final DetailedStatisticsItem siteStatistic;
     public ParserUtil(SiteRepository siteRepository,
                       PageRepository pageRepository,
                       LemmaRepository lemmaRepository,

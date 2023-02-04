@@ -1,4 +1,4 @@
-package searchengine.dto.search;
+package searchengine.dto.searchresponse;
 import java.util.List;
 import lombok.Data;
 

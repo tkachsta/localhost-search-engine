@@ -8,6 +8,8 @@ import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -37,31 +39,31 @@ public class SinglePageParsing implements ParserService {
     public void runParsing() {
         String url = siteEntity.getUrl() + pageEntity.getPath();
         cleanIndexAndLemmaTables();
-        try {
-            createTaskForIndexing(url);
-            Thread.sleep(2000);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-
+        createTaskForIndexing(url);
     }
-    private void createTaskForIndexing(String url) throws Exception {
+    private void createTaskForIndexing(String url)  {
         Connection.Response response = getPageResponse(url);
-        PageEntity pageEntity = collectInformationOfPage(response, url);
-        List<PageEntity> pageEntityList = new ArrayList<>();
-        pageEntityList.add(pageEntity);
-        pageEntityQueueForLemmaService.add(pageEntityList);
+        if (response != null) {
+            PageEntity pageEntity = collectInformationOfPage(response, url);
+            List<PageEntity> pageEntityList = new ArrayList<>();
+            pageEntityList.add(pageEntity);
+            pageEntityQueueForLemmaService.add(pageEntityList);
+        }
     }
-    private Connection.Response getPageResponse(String url) throws Exception {
+    private Connection.Response getPageResponse(String url) {
         if (nodeIsCleanForProcessing(url)) {
-            return Jsoup
-                    .connect(url)
-                    .followRedirects(false)
-                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; " +
-                            "rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                    .referrer("http://www.google.com")
-                    .timeout(20000)
-                    .execute();
+            try {
+                return Jsoup
+                        .connect(url)
+                        .followRedirects(false)
+                        .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; " +
+                                "rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                        .referrer("http://www.google.com")
+                        .timeout(20000)
+                        .execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return null;
     }

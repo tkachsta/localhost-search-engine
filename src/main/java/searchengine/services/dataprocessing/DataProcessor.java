@@ -3,8 +3,6 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.transaction.annotation.Transactional;
 import searchengine.dto.statistics.DetailedStatisticsItem;
-import searchengine.model.lemma.LemmaRepository;
-import searchengine.model.site.SiteRepository;
 import searchengine.services.dto.services.CollectedLemmas;
 import searchengine.services.dto.services.Index;
 import searchengine.model.index.IndexEntity;
@@ -23,9 +21,7 @@ import java.util.*;
 import java.util.concurrent.BlockingQueue;
 
 @Transactional
-public class DataProcessor implements Runnable {
-    private final LemmaRepository lemmaRepository;
-    private final SiteRepository siteRepository;
+public class DataProcessor implements DataProcessingService {
     private final BlockingQueue<LemmaIndexCouple> pageEntityQueueForPageRepository;
     private final BlockingQueue<List<LemmaIndexCouple>> queueForDataProcessor;
     private final Map<String, LemmaEntity> redisLemmas;
@@ -39,69 +35,41 @@ public class DataProcessor implements Runnable {
                          DetailedStatisticsItem siteStatistic,
                          BlockingQueue<LemmaIndexCouple> pageEntityQueueForPageRepository,
                          BlockingQueue<List<LemmaIndexCouple>> queueForDataProcessor,
-                         ParserType parserType,
-                         LemmaRepository lemmaRepository,
-                         SiteRepository siteRepository) {
+                         ParserType parserType) {
         this.parserThread = parserThread;
         this.siteEntity = siteEntity;
         this.pageEntityQueueForPageRepository = pageEntityQueueForPageRepository;
         this.queueForDataProcessor = queueForDataProcessor;
-        this.lemmaRepository = lemmaRepository;
         this.parserType = parserType;
-        this.siteRepository = siteRepository;
         this.siteStatistic = siteStatistic;
         this.redisLemmas = new HashMap<>();
     }
     @Override
     public void run() {
-        if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
-            processingMultiplePages();
-        } else if (parserType == ParserType.SINGLEPAGE) {
-            processingSinglePage();
-        }
-    }
-    private void processingMultiplePages() {
         while (parserThread.isAlive() || !queueForDataProcessor.isEmpty()) {
             List<LemmaIndexCouple> pageLemmaIndexCouple = queueForDataProcessor.poll();
             if (pageLemmaIndexCouple == null) {
                 continue;
             }
-            try {
+            if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
                 multiplePageProcessor(pageLemmaIndexCouple, "multi");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            siteStatistic.setLemmas(redisLemmas.size());
-        }
-    }
-    private void processingSinglePage() {
-        while (parserThread.isAlive() || !queueForDataProcessor.isEmpty()) {
-            List<LemmaIndexCouple> pageLemmaIndexCouple = queueForDataProcessor.poll();
-            if (pageLemmaIndexCouple == null) {
-                continue;
-            }
-            try {
+                siteStatistic.setLemmas(redisLemmas.size());
+            } else if (parserType == ParserType.SINGLEPAGE) {
                 multiplePageProcessor(pageLemmaIndexCouple, "single");
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }
-
-
-    private void multiplePageProcessor(List<LemmaIndexCouple> pageLemmaIndexCouple, String option)
-            throws InterruptedException {
+    private void multiplePageProcessor(List<LemmaIndexCouple> pageLemmaIndexCouple, String option) {
         for (LemmaIndexCouple couple : pageLemmaIndexCouple) {
             List<Index> indexes = new ArrayList<>();
             List<LemmaEntity> lemmaEntityList = new ArrayList<>();
             singlePageProcessor(couple, lemmaEntityList, indexes, option);
         }
     }
-
     private void singlePageProcessor(LemmaIndexCouple pageLemmaIndexCouple,
                                      List<LemmaEntity> lemmaEntityList,
                                      List<Index> indexes,
-                                     String option) throws InterruptedException {
+                                     String option){
         CollectedLemmas lemmas = pageLemmaIndexCouple.getCollectedLemmas();
         PageEntity pageEntity = lemmas.getPageEntity();
         Map<String, Integer> collectedLemmas = lemmas.getCollectedLemmas();
@@ -111,8 +79,12 @@ public class DataProcessor implements Runnable {
         if (lemmaEntityList.size() != 0) {
             pageLemmaIndexCouple.setLemmaEntityList(lemmaEntityList);
             pageLemmaIndexCouple.setIndexEntityList(indexesForRepository);
-            pageEntityQueueForPageRepository.put(pageLemmaIndexCouple);
-        };
+            try {
+                pageEntityQueueForPageRepository.put(pageLemmaIndexCouple);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
     private void processLemmaMap(Map<String, Integer> collectedLemmas,
                                  List<LemmaEntity> lemmaEntityList,
@@ -153,6 +125,7 @@ public class DataProcessor implements Runnable {
                 lemmaEntity.setLemma(key);
                 lemmaEntity.setFrequency(1);
             }
+
             lemmaEntity.getSite().setStatusTime(LocalDateTime.now());
             redisLemmas.put(key, lemmaEntity);
             lemmaEntityList.add(lemmaEntity);
@@ -170,13 +143,13 @@ public class DataProcessor implements Runnable {
             if (redisLemmas.containsKey(key)) {
                 lemmaEntity = redisLemmas.get(key);
                 lemmaEntity.setFrequency(lemmaEntity.getFrequency() + 1);
-                lemmaEntity.setLemma_id(lemmaEntity.getLemma_id());
             } else {
                 lemmaEntity = new LemmaEntity();
                 lemmaEntity.setSite(siteEntity);
                 lemmaEntity.setLemma(key);
                 lemmaEntity.setFrequency(1);
             }
+            System.out.println(lemmaEntity.getLemma());
             lemmaEntity.getSite().setStatusTime(LocalDateTime.now());
             redisLemmas.put(key, lemmaEntity);
             lemmaEntityList.add(lemmaEntity);
@@ -193,9 +166,7 @@ public class DataProcessor implements Runnable {
         le.where(cb.equal(root.get("site").get("site_id"), siteEntity.getSite_id()));
         Query<LemmaEntity> query = session.createQuery(le);
         List<LemmaEntity> results = query.getResultList();
-        System.out.println("Размер" + results.size());
-        results.forEach(lemmaEntity -> {
-            redisLemmas.put(lemmaEntity.getLemma(), lemmaEntity);
-        });
+        results.forEach(lemmaEntity -> redisLemmas.put(lemmaEntity.getLemma(), lemmaEntity));
+        session.close();
     }
 }

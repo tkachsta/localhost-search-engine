@@ -53,17 +53,12 @@ public class IndexingUtil implements Runnable {
     @Override
     public void run() {
         Thread parserThread = startParserService();
-        Thread lemmaFinder = startLemmaFinderService(parserThread);
-        Thread dataProcessing = startDataProcessingService(parserThread);
-        Thread pageWriter = startPageRepositoryQueueService(parserThread);
-        Thread lemmaIndexWriter = startLemmaRepositoryQueueService(parserThread);
-
-
+        Thread lemmaFinderThread = startLemmaFinderService(parserThread);
+        Thread dataProcessingThread = startDataProcessingService(lemmaFinderThread);
+        Thread pageWriterThread = startPageRepositoryQueueService(dataProcessingThread);
+        Thread lemmaIndexWriterThread = startLemmaRepositoryQueueService(pageWriterThread);
         try {
-            lemmaFinder.join();
-            dataProcessing.join();
-            pageWriter.join();
-            lemmaIndexWriter.join();
+            lemmaIndexWriterThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -88,31 +83,30 @@ public class IndexingUtil implements Runnable {
         threadLemmaFinder.start();
         return threadLemmaFinder;
     }
-    private Thread startDataProcessingService(Thread parserThread) {
+    private Thread startDataProcessingService(Thread lemmaFinderThread) {
         DataProcessor dp = new DataProcessor(
-                        parserThread, siteEntity, siteStatistic,
+                        lemmaFinderThread, siteEntity, siteStatistic,
                         storageQueue.getPageEntityQueueForPageRepository(),
-                        storageQueue.getQueueForDataProcessor(),
-                        parserType, lemmaRepository, siteRepository);
+                        storageQueue.getQueueForDataProcessor(), parserType);
         Thread dataProcessor = new Thread(dp);
         dataProcessor.start();
         return dataProcessor;
     }
-    private Thread startPageRepositoryQueueService(Thread parserThread) {
+    private Thread startPageRepositoryQueueService(Thread dataProcessingThread) {
         PageRepositoryQueueService pageRepositoryQueueService =
                 new PageRepositoryQueueService(
-                        pageRepository, parserThread, parserType,
+                        pageRepository, dataProcessingThread, parserType,
                         storageQueue.getPageEntityQueueForPageRepository(),
                         storageQueue.getLemmasEntityQueueForLemmasRepository(), siteStatistic);
         Thread threadPageWriter = new Thread(pageRepositoryQueueService);
         threadPageWriter.start();
         return threadPageWriter;
     }
-    private Thread startLemmaRepositoryQueueService(Thread parserThread) {
+    private Thread startLemmaRepositoryQueueService(Thread pageWriterThread) {
         LemmaRepositoryQueueService qs =
                 new LemmaRepositoryQueueService(
                         lemmaRepository, indexRepository, siteRepository,
-                        siteEntity, parserThread, ratioModel, siteStatistic,
+                        siteEntity, pageWriterThread, ratioModel, siteStatistic,
                         storageQueue.getLemmasEntityQueueForLemmasRepository(), parserType);
         Thread LQS = new Thread(qs);
         LQS.start();

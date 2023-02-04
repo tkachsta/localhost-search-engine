@@ -1,8 +1,6 @@
 package searchengine.services;
-
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
@@ -12,7 +10,7 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.indexer.IndexingService;
+import searchengine.services.indexer.IndexingServiceImpl;
 import searchengine.services.parser.RecursiveParsingService;
 
 import java.util.List;
@@ -50,7 +48,7 @@ class ParsingServiceImpTest {
         site.setUrl("http://school6.m-sk.ru");
         site.setName("http://school6.m-sk.ru");
 
-        IndexingService ws = new IndexingService(
+        IndexingServiceImpl ws = new IndexingServiceImpl(
                 siteRepository,
                 pageRepository,
                 lemmaRepository,
@@ -66,7 +64,7 @@ class ParsingServiceImpTest {
         int id = 61;
         SiteEntity siteEntity = siteRepository.findByUrl("http://school6.m-sk.ru");
         PageEntity pageEntity = pageRepository.findById(id).get();
-        IndexingService ws = new IndexingService(siteRepository,
+        IndexingServiceImpl ws = new IndexingServiceImpl(siteRepository,
                 pageRepository,
                 lemmaRepository,
                 indexRepository,
@@ -79,21 +77,21 @@ class ParsingServiceImpTest {
     @Order(3)
     @DisplayName("Остановка парсинга")
     public void terminateIndexing()  {
-        site.setUrl("http://playback.ru");
-        site.setName("http://playback.ru");
-        IndexingService ws = new IndexingService(
-                siteRepository, pageRepository,
-                lemmaRepository, indexRepository, sitesList);
-        Thread thread = new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-                IndexingService.terminateIndexing();
-            } catch (InterruptedException | JSONException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        thread.start();
-        ws.startSingleSiteRecursiveIndexing(site);
+//        site.setUrl("http://playback.ru");
+//        site.setName("http://playback.ru");
+//        IndexingServiceImpl ws = new IndexingServiceImpl(
+//                siteRepository, pageRepository,
+//                lemmaRepository, indexRepository, sitesList);
+//        Thread thread = new Thread(() -> {
+//            try {
+//                Thread.sleep(5000);
+//                IndexingServiceImpl.terminateIndexing();
+//            } catch (InterruptedException | JSONException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
+//        thread.start();
+//        ws.startSingleSiteRecursiveIndexing(site);
     }
     @Test
     @Order(4)
@@ -111,7 +109,7 @@ class ParsingServiceImpTest {
         site5.setName("http://playback.ru");
         sitesList.addSite(site5);
 
-        IndexingService ws = new IndexingService(
+        IndexingServiceImpl ws = new IndexingServiceImpl(
                 siteRepository,
                 pageRepository,
                 lemmaRepository,

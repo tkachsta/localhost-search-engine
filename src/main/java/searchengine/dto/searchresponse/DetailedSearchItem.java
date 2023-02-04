@@ -1,9 +1,6 @@
-package searchengine.dto.search;
+package searchengine.dto.searchresponse;
 import lombok.Data;
-import lombok.Getter;
-
 @Data
-@Getter
 public class DetailedSearchItem {
     private String site;
     private String siteName;

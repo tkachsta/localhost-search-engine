@@ -1,9 +1,8 @@
 package searchengine.services.search;
 
-import searchengine.dto.search.SearchRequest;
-import searchengine.dto.search.SearchResponse;
+import searchengine.dto.searchrequest.SearchRequest;
+import searchengine.dto.searchresponse.SearchResponse;
 
 public interface SearchService {
-
     SearchResponse getSearchResult(SearchRequest searchRequest);
 }
