@@ -3,6 +3,7 @@ import org.apache.lucene.morphology.LuceneMorphology;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import searchengine.lemmafinder.LemmaFinder;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import java.util.HashMap;

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.statistics.StatisticsResponse;
-import searchengine.services.statistic.StatisticsService;
-import searchengine.services.synchronization.StatisticsSynchronization;
+import searchengine.services.StatisticsService;
+import searchengine.syncronization.StatisticsSynchronization;
 
 @RestController
 @RequiredArgsConstructor

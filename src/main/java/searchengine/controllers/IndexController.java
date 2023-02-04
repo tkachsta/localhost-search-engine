@@ -5,7 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import searchengine.dto.searchresponse.FalseResponse;
 import searchengine.dto.searchresponse.TrueResponse;
-import searchengine.services.indexer.IndexingService;
+import searchengine.services.IndexingService;
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor

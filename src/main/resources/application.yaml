@@ -17,24 +17,24 @@ spring:
     show-sql: true
 indexing-settings:
   sites:
-    - url: http://cimus.biz
-      name: Косметика для женщин
+#    - url: http://cimus.biz
+#      name: Косметика для женщин
     - url: http://school6.m-sk.ru
       name: Гимназия №6, г. Междуреченск
-    - url: http://playback.ru
-      name: Online-магазин телефонов
-    - url: https://www.playground.ru
-      name: Портал видеигр
-    - url: https://www.afisha.ru
-      name: Мероприятия и развлечения
-    - url: https://www.okb2-tmn.ru
-      name: ОКБ в городе Тюмень
-    - url: https://tpu.ru
-      name: Томский Политехнический Университет
+#    - url: http://playback.ru
+#      name: Online-магазин телефонов
+#    - url: https://www.playground.ru
+#      name: Портал видеигр
+#    - url: https://www.afisha.ru
+#      name: Мероприятия и развлечения
+#    - url: https://www.okb2-tmn.ru
+#      name: ОКБ в городе Тюмень
+#    - url: https://tpu.ru
+#      name: Томский Политехнический Университет
     - url: https://teniteatr.ru
       name: Детский театр теней
-    - url: http://kirova47.ru
-      name: Детская городска поликлиника
+#    - url: http://kirova47.ru
+#      name: Детская городска поликлиника
 
 
 

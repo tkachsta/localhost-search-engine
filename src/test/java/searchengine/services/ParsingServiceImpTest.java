@@ -10,8 +10,8 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.services.indexer.IndexingServiceImpl;
-import searchengine.services.parser.RecursiveParsingService;
+import searchengine.services.impl.IndexingServiceImpl;
+import searchengine.parser.RecursiveParsingService;
 
 import java.util.List;
 

@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import searchengine.dto.searchrequest.SearchRequest;
 import searchengine.dto.searchresponse.FalseResponse;
-import searchengine.services.search.SearchService;
+import searchengine.services.SearchService;
 
 @RestController
 @RequiredArgsConstructor
