@@ -50,7 +50,7 @@ public class SearchServiceImpl implements SearchService {
     private List<SiteEntity> getSitesList(SearchRequest searchRequest) {
         List<SiteEntity> sites = new ArrayList<>();
         String site = searchRequest.getSite();
-        if (site == null) {
+        if (site.equals("")) {
             sitesList.getSites().forEach(record -> {
                 String siteUrl = record.getUrl();
                 SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
@@ -67,8 +67,8 @@ public class SearchServiceImpl implements SearchService {
         return lemmaFinder.collectLemmas(query);
     }
     private void lemmaTrimming(Map<String, Integer> queryLemmas, float trimmingCoef) {
-        List<SiteEntity> siteEntityList = siteRepository.findAllSites();
-        float totalPages = (float) pageRepository.findCountBySites(siteEntityList);
+        List<SiteEntity> siteEntityList = siteRepository.findAllBy();
+        float totalPages = (float) pageRepository.countAllBySiteIn(siteEntityList);
         Set<String> lemmasToRemove = new HashSet<>();
         queryLemmas.forEach((lemma, rating) -> {
             Optional<Integer> lemmaPresence = lemmaRepository.sumOfLemmaFrequency(lemma);
@@ -94,10 +94,10 @@ public class SearchServiceImpl implements SearchService {
         Optional<String> firstKey = sortedLemma.keySet().stream().findFirst();
         if (firstKey.isPresent()) {
             String lemma = firstKey.get();
-            Collection<IndexEntity> indexEntityList = indexRepository.selectIndexesByKey(lemma, siteEntityList);
+            Collection<IndexEntity> indexEntityList = indexRepository.findIndexEntitiesByLemma_LemmaAndLemma_SiteIn(lemma, siteEntityList);
             indexEntityList.forEach(index -> pageEntityList.add(index.getPage()));
             sortedLemma.forEach((entry, frequency) -> {
-                Collection<IndexEntity> indexes = indexRepository.selectIndexesByLemmaAndPage(entry, pageEntityList, siteEntityList);
+                Collection<IndexEntity> indexes = indexRepository.findAllByLemma_LemmaAndLemma_SiteInAndPageIn(entry, siteEntityList, pageEntityList);
                 pageEntityList.clear();
                 indexes.forEach(index -> pageEntityList.add(index.getPage()));
                 trimmedIndexes.addAll(indexes);

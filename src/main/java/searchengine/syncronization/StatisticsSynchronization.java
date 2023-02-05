@@ -22,7 +22,7 @@ public class StatisticsSynchronization {
 
     public void dataBaseSync() {
         if (statisticsData.getDetailed().isEmpty()) {
-            List<SiteEntity> siteEntityList = siteRepository.findAllSites();
+            List<SiteEntity> siteEntityList = siteRepository.findAllBy();
             siteEntityList.forEach(site -> {
                 if (validateSiteForSynchronization(site)) {
                     DetailedStatisticsItem siteStatistic = new DetailedStatisticsItem();
@@ -32,8 +32,8 @@ public class StatisticsSynchronization {
                     siteStatistic.setStatus(site.getStatus().toString());
                     siteStatistic.setStatusTime(ZonedDateTime.of(site.getStatusTime(), ZoneId.systemDefault()).toInstant().toEpochMilli());
                     siteStatistic.setError(site.getLastError());
-                    siteStatistic.setLemmas(lemmaRepository.findCountBySite(site));
-                    siteStatistic.setPages(pageRepository.findCountBySite(site));
+                    siteStatistic.setLemmas(lemmaRepository.countAllBySite(site));
+                    siteStatistic.setPages(pageRepository.countAllBySite(site));
 
                 }
             });

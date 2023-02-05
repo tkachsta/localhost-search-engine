@@ -61,7 +61,7 @@ public class IndexingServiceImpl implements IndexingService {
         String siteUrl = matcher.group(1).trim();
         String pageUrl = matcher.group(2).trim();
         SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
-        PageEntity pageEntity = pageRepository.findPageByPath(pageUrl);
+        PageEntity pageEntity = pageRepository.findByPath(pageUrl);
         if (urlCheckForIndexing(siteUrl)) {
             IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
                     ParserType.SINGLEPAGE, new Site(), siteEntity, pageEntity);
@@ -75,9 +75,9 @@ public class IndexingServiceImpl implements IndexingService {
         SiteEntity siteEntity = siteRepository.findByUrl(site.getUrl());
         List<PageEntity> pageEntityList = pageRepository.findAllBySite(siteEntity);
         indexRepository.removeAllByPages(pageEntityList);
-        lemmaRepository.removeAllBySite(siteEntity);
-        pageRepository.removeAllBySite(siteEntity);
-        siteRepository.removeAllByUrl(site.getUrl());
+        lemmaRepository.deleteAllBySite(siteEntity);
+        pageRepository.deleteAllBySite(siteEntity);
+        siteRepository.deleteAllByUrl(site.getUrl());
 
         siteEntity = new SiteEntity();
         siteEntity.setStatus(IndexingStatus.INDEXING);

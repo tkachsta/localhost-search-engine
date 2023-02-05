@@ -31,23 +31,9 @@ public class PageEntity {
         PageEntity that = (PageEntity) o;
         return page_id == that.page_id && Objects.equals(path, that.path);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(page_id, path);
     }
-
-
-
-
-//    @ManyToMany(cascade = CascadeType.ALL)
-//    @JoinTable(
-//            name = "index_table",
-//            joinColumns = {@JoinColumn(name = "page_id")},
-//            inverseJoinColumns = {@JoinColumn(name = "lemma_id")}
-//    )
-//    Set<LemmaEntity> lemmas = new HashSet<>();
-
-
 
 }

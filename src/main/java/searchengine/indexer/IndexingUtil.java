@@ -32,6 +32,7 @@ public class IndexingUtil implements Runnable {
     private final IndexRatioModel ratioModel;
     private final static StatisticsData statisticsData = new StatisticsData();
     private DetailedStatisticsItem siteStatistic;
+
     public IndexingUtil(SiteRepository siteRepository,
                         PageRepository pageRepository,
                         LemmaRepository lemmaRepository,
@@ -114,7 +115,6 @@ public class IndexingUtil implements Runnable {
         LQS.start();
         return LQS;
     }
-
     public static StatisticsData getStatisticsData() {
         return statisticsData;
     }

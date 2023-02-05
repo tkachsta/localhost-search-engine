@@ -100,7 +100,7 @@ public class SinglePageParsing implements ParserService {
                 !url.contains("goout");
     }
     private void cleanIndexAndLemmaTables() {
-        List<IndexEntity> indexEntityList = indexRepository.selectByPageId(pageEntity);
+        List<IndexEntity> indexEntityList = indexRepository.findAllByPage(pageEntity);
         List<LemmaEntity> lemmaEntityList = new ArrayList<>();
         indexEntityList.forEach(indexEntity -> {
             LemmaEntity lemmaEntity = indexEntity.getLemma();
@@ -109,6 +109,6 @@ public class SinglePageParsing implements ParserService {
         });
         indexRepository.removeAllByPage(pageEntity);
         lemmaRepository.saveAll(lemmaEntityList);
-        pageRepository.removePageById(pageEntity.getPage_id());
+        pageRepository.deleteByPath(pageEntity.getPath());
     }
 }

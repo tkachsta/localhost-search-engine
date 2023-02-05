@@ -73,7 +73,7 @@ public class LemmaRepositoryQueueService implements Runnable {
             }
         }
     }
-    public void siteTableUpdateOnFinish() {
+    private void siteTableUpdateOnFinish() {
         siteEntity.setLastError(indexRatioModel.getIndexRatioModelMessage());
         siteEntity.setStatus(IndexingStatus.INDEXED);
         siteEntity.setStatusTime(LocalDateTime.now());
