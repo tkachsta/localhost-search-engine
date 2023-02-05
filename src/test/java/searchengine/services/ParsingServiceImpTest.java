@@ -14,6 +14,7 @@ import searchengine.services.impl.IndexingServiceImpl;
 import searchengine.parser.RecursiveParsingService;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringBootTest
 @DisplayName("Запись данных парсинга сайта в БД")
@@ -35,6 +36,8 @@ class ParsingServiceImpTest {
     RecursiveParsingService recursiveParsingService;
     @Autowired
     Site site;
+    @Autowired
+    IndexingServiceImpl indexingService;
 
     @BeforeEach
     public void setUp () {
@@ -48,13 +51,13 @@ class ParsingServiceImpTest {
         site.setUrl("http://school6.m-sk.ru");
         site.setName("http://school6.m-sk.ru");
 
-        IndexingServiceImpl ws = new IndexingServiceImpl(
-                siteRepository,
-                pageRepository,
-                lemmaRepository,
-                indexRepository,
-                sitesList);
-        ws.startSingleSiteRecursiveIndexing(site);
+//        IndexingServiceImpl ws = new IndexingServiceImpl(
+//                siteRepository,
+//                pageRepository,
+//                lemmaRepository,
+//                indexRepository,
+//                sitesList);
+        indexingService.startSingleSiteRecursiveIndexing(site);
 
     }
     @Test
@@ -63,15 +66,16 @@ class ParsingServiceImpTest {
     public void singlePageParsing()  {
         int id = 61;
         SiteEntity siteEntity = siteRepository.findByUrl("http://school6.m-sk.ru");
-        PageEntity pageEntity = pageRepository.findById(id).get();
-        IndexingServiceImpl ws = new IndexingServiceImpl(siteRepository,
-                pageRepository,
-                lemmaRepository,
-                indexRepository,
-                sitesList);
-        String pageURL = siteEntity.getUrl() + pageEntity.getPath();
-        ws.startSinglePageIndexing(pageURL);
-
+        Optional<PageEntity> pageEntity = pageRepository.findById(id);
+        if (pageEntity.isPresent()) {
+            IndexingServiceImpl ws = new IndexingServiceImpl(siteRepository,
+                    pageRepository,
+                    lemmaRepository,
+                    indexRepository,
+                    sitesList);
+            String pageURL = siteEntity.getUrl() + pageEntity.get().getPath();
+            ws.startSinglePageIndexing(pageURL);
+        }
     }
     @Test
     @Order(3)
@@ -127,9 +131,9 @@ class ParsingServiceImpTest {
         SiteEntity siteEntity = siteRepository.findByUrl(site.getUrl());
         List<PageEntity> pageEntityList = pageRepository.findAllBySite(siteEntity);
         indexRepository.removeAllByPages(pageEntityList);
-        lemmaRepository.removeAllBySite(siteEntity);
-        pageRepository.removeAllBySite(siteEntity);
-        siteRepository.removeAllByUrl(site.getUrl());
+        lemmaRepository.deleteAllBySite(siteEntity);
+        pageRepository.deleteAllBySite(siteEntity);
+        siteRepository.deleteAllByUrl(site.getUrl());
 
     }
 

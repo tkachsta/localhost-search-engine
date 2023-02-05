@@ -13,8 +13,6 @@ import searchengine.model.site.SiteRepository;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @SpringBootTest
@@ -39,9 +37,8 @@ class LemmaEntityTest {
     public void writeToPageTable() {
         String path = "src/test/java/searchengine/model/lemmas.json";
         ObjectMapper objectMapper = new ObjectMapper();
-        Iterable<SiteEntity> sites = siteRepository.findByStatus(IndexingStatus.INDEXED);
-        List<SiteEntity> sitesList = new ArrayList<>((Collection) sites);
-        numberOfSites = sitesList.size();
+        List<SiteEntity> sites = siteRepository.findAllByStatus(IndexingStatus.INDEXED);
+        numberOfSites = sites.size();
 
         try {
             int iterationCount = 0;
@@ -54,9 +51,9 @@ class LemmaEntityTest {
                 lemma.setLemma(entry.get("lemma").asText());
                 lemma.setFrequency(entry.get("frequency").asInt());
                 if (iterationCount < nodes.size() / 2) {
-                    lemma.setSite(sitesList.get(0));
+                    lemma.setSite(sites.get(0));
                 } else {
-                    lemma.setSite(sitesList.get(1));
+                    lemma.setSite(sites.get(1));
                 }
 
                 iterationCount++;
@@ -67,7 +64,7 @@ class LemmaEntityTest {
             throw new RuntimeException(e);
         }
         int numberOfEntriesFromJSON = numberOfEntries;
-        int numberOfEntriesFromDB = lemmaRepository.findCount();
+        int numberOfEntriesFromDB = lemmaRepository.countAllBy();
         Assertions.assertEquals(numberOfEntriesFromJSON, numberOfEntriesFromDB);
     }
     @Test

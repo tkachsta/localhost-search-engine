@@ -66,13 +66,13 @@ class SiteRepositoryTest {
     @DisplayName("INSERT в таблицу SiteRepository")
     public void writeToSiteTable() {
         int numberOfEntriesFromJSON = numberOfEntries;
-        int numberOfEntriesFromDB = siteRepository.findCount();
+        int numberOfEntriesFromDB = siteRepository.countAllBy();
         Assertions.assertEquals(numberOfEntriesFromJSON, numberOfEntriesFromDB);
     }
     @Test
     @DisplayName("SELECT по полю Статус")
     public void getByStatus() {
-        Iterable<SiteEntity> sites = siteRepository.findByStatus(IndexingStatus.INDEXED);
+        Iterable<SiteEntity> sites = siteRepository.findAllByStatus(IndexingStatus.INDEXED);
         int numberOfIndexedEntriesFromJSON = numberOfIndexedEntries;
         int numberOfIndexedEntriesFromDB = 0;
         for (SiteEntity site : sites) {
@@ -91,8 +91,8 @@ class SiteRepositoryTest {
     @Test
     @DisplayName("Удаление из БД по URL сайта")
     public void removeAllByUrl() {
-        siteRepository.removeAllByUrl("test_url_9");
-        Assertions.assertEquals(9, siteRepository.findCount());
+        siteRepository.deleteAllByUrl("test_url_9");
+        Assertions.assertEquals(9, siteRepository.countAllBy());
     }
 
 }

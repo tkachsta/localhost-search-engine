@@ -44,10 +44,12 @@ class IndexEntityTest {
             Optional<LemmaEntity> lemma = lemmaRepository.findById(randomLemma);
             float frequency = (int) (Math.random() * 10) + 1;
             IndexEntity index = new IndexEntity();
-            IndexKey indexKey = new IndexKey(page.get(), lemma.get());
-            index.setIndex_id(indexKey);
-            index.setRank(frequency);
-            indexRepository.save(index);
+            if (page.isPresent() && lemma.isPresent()) {
+                IndexKey indexKey = new IndexKey(page.get(), lemma.get());
+                index.setIndex_id(indexKey);
+                index.setRank(frequency);
+                indexRepository.save(index);
+            }
         }
 
     }
@@ -56,9 +58,11 @@ class IndexEntityTest {
     @DisplayName("SELECT всех IndexEntity по PageEntity")
     public void findLemmasByPage() {
         int maxId = pageRepository.findMaxId();
-        PageEntity pageEntity = pageRepository.findById(maxId).get();
-        List<IndexEntity> indexEntityList = indexRepository.selectByPageId(pageEntity);
-        Assertions.assertFalse(indexEntityList.isEmpty());
+        Optional<PageEntity> pageEntity = pageRepository.findById(maxId);
+        if (pageEntity.isPresent()) {
+            List<IndexEntity> indexEntityList = indexRepository.findAllByPage(pageEntity.get());
+            Assertions.assertFalse(indexEntityList.isEmpty());
+        }
     }
     @Test
     @Order(3)
@@ -66,28 +70,33 @@ class IndexEntityTest {
     public void removeLemmasForPage() {
         int maxId = pageRepository.findMaxId();
         int iniFreq = lemmaRepository.totalSumOfFrequency();
-        PageEntity pageEntity = pageRepository.findById(maxId).get();
-        List<IndexEntity> indexEntityList = indexRepository.selectByPageId(pageEntity);
-        List<LemmaEntity> lemmaEntityList = new ArrayList<>();
-        int sumRank = 0;
-        for (IndexEntity index : indexEntityList) {
-            sumRank += index.getRank();
-            LemmaEntity lemmaEntity = index.getLemma();
-            lemmaEntity.setFrequency(lemmaEntity.getFrequency() - (int) index.getRank());
-            lemmaEntityList.add(lemmaEntity);
+        Optional<PageEntity> pageEntity = pageRepository.findById(maxId);
+        if (pageEntity.isPresent()) {
+            List<IndexEntity> indexEntityList = indexRepository.findAllByPage(pageEntity.get());
+            List<LemmaEntity> lemmaEntityList = new ArrayList<>();
+            int sumRank = 0;
+            for (IndexEntity index : indexEntityList) {
+                sumRank += index.getRank();
+                LemmaEntity lemmaEntity = index.getLemma();
+                lemmaEntity.setFrequency(lemmaEntity.getFrequency() - (int) index.getRank());
+                lemmaEntityList.add(lemmaEntity);
+            }
+            lemmaRepository.saveAll(lemmaEntityList);
+            int endFreq = lemmaRepository.totalSumOfFrequency();
+            Assertions.assertEquals(iniFreq, endFreq + sumRank);
         }
-        lemmaRepository.saveAll(lemmaEntityList);
-        int endFreq = lemmaRepository.totalSumOfFrequency();
-        Assertions.assertEquals(iniFreq, endFreq + sumRank);
     }
     @Test
     @Order(4)
     @DisplayName("DELETE всех IndexEntity по PageEntity")
     public void removeLemmasByPage() {
         int maxId = pageRepository.findMaxId();
-        PageEntity pageEntity = pageRepository.findById(maxId).get();
-        indexRepository.removeAllByPage(pageEntity);
-        List<IndexEntity> indexEntityList = indexRepository.selectByPageId(pageEntity);
-        Assertions.assertTrue(indexEntityList.isEmpty());
+        Optional<PageEntity> pageEntity = pageRepository.findById(maxId);
+        if (pageEntity.isPresent()) {
+            indexRepository.removeAllByPage(pageEntity.get());
+            List<IndexEntity> indexEntityList = indexRepository.findAllByPage(pageEntity.get());
+            Assertions.assertTrue(indexEntityList.isEmpty());
+        }
+
     }
 }

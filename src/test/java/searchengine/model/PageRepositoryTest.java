@@ -9,13 +9,11 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 @SpringBootTest
@@ -36,9 +34,8 @@ class PageRepositoryTest {
         pageRepository.deleteAll();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        Iterable<SiteEntity> sites = siteRepository.findByStatus(IndexingStatus.INDEXED);
-        List<SiteEntity> sitesList = new ArrayList<>((Collection) sites);
-        numberOfSites = sitesList.size();
+        List<SiteEntity> sites = siteRepository.findAllByStatus(IndexingStatus.INDEXED);
+        numberOfSites = sites.size();
 
         try {
             int iterationCount = 0;
@@ -52,9 +49,9 @@ class PageRepositoryTest {
                 page.setContent(entry.get("content").asText());
 
                 if (iterationCount < nodes.size() / 2) {
-                    page.setSite(sitesList.get(0));
+                    page.setSite(sites.get(0));
                 } else {
-                    page.setSite(sitesList.get(1));
+                    page.setSite(sites.get(1));
                 }
 
                 iterationCount++;
@@ -70,7 +67,7 @@ class PageRepositoryTest {
     @DisplayName("Запись данных в таблицу Page")
     public void writeToPageTable() {
         int numberOfEntriesFromJSON = numberOfEntries;
-        int numberOfEntriesFromDB = pageRepository.findCount();
+        int numberOfEntriesFromDB = pageRepository.countAllBy();
         Assertions.assertEquals(numberOfEntriesFromJSON, numberOfEntriesFromDB);
     }
     @Test
@@ -83,12 +80,12 @@ class PageRepositoryTest {
     @DisplayName("Проверка наличия Page в БД")
     public void pageExistsInPageEntity() {
         Assertions.assertTrue(
-                pageRepository.findPressenceOfPage("path1") > 0);
+                pageRepository.countByPath("path1") > 0);
     }
     @Test
     @DisplayName("Проверка отсутствия Page в БД")
     public void pageNotExistsInPageEntity() {
-        Assertions.assertEquals(0, pageRepository.findPressenceOfPage("path"));
+        Assertions.assertEquals(0, pageRepository.countByPath("path"));
     }
     @Test
     @DisplayName("Проверка запроса нескольких записей по Path")
@@ -101,7 +98,7 @@ class PageRepositoryTest {
         pathes.add("path13");
         pathes.add("path14");
 
-        List<PageEntity> queries = pageRepository.multipleSelectByPath(pathes);
+        List<PageEntity> queries = pageRepository.findAllByPathIn(pathes);
         List<String> responseList = new ArrayList<>();
         queries.forEach(x -> responseList.add(x.getPath()));
         pathes.removeAll(responseList);
@@ -125,8 +122,8 @@ class PageRepositoryTest {
             pageEntity.setCode(505);
             pageEntity.setPath("test_path_25");
         }
-        pageRepository.removeAllBySite(siteEntity);
-        Assertions.assertEquals(10, pageRepository.findCount());
+        pageRepository.deleteAllBySite(siteEntity);
+        Assertions.assertEquals(10, pageRepository.countAllBy());
     }
 
 
