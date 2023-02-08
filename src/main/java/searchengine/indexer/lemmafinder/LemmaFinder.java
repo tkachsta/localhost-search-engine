@@ -1,4 +1,4 @@
-package searchengine.lemmafinder;
+package searchengine.indexer.lemmafinder;
 import org.apache.lucene.morphology.LuceneMorphology;
 import org.apache.lucene.morphology.russian.RussianLuceneMorphology;
 import org.springframework.context.annotation.Bean;

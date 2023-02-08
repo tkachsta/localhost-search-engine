@@ -1,4 +1,4 @@
-package searchengine.syncronization;
+package searchengine.statistic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import searchengine.dto.statistics.DetailedStatisticsItem;

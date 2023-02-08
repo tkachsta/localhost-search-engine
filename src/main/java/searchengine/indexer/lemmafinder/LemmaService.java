@@ -1,4 +1,4 @@
-package searchengine.lemmafinder;
+package searchengine.indexer.lemmafinder;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,8 +19,6 @@ public class LemmaService implements LemmaFinderService {
     private final BlockingQueue<List<LemmaIndexCouple>> queueForDataProcessor;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
     private final LemmaFinder lemmaFinder = LemmaFinder.getInstance();
-    private static int processedPagesForLemma = 0;
-    private static int sumFrequencyLemmas = 0;
     @Override
     public void runLemmatization()  {
         while (parserThread.isAlive() || !pageEntityQueueForLemmaService.isEmpty()) {

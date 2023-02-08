@@ -1,4 +1,4 @@
-package searchengine.parser;
+package searchengine.indexer.parser;
 public interface ParserService {
     void runParsing ();
 

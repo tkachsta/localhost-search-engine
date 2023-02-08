@@ -14,7 +14,7 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.lemmafinder.LemmaFinder;
+import searchengine.indexer.lemmafinder.LemmaFinder;
 import searchengine.services.SearchService;
 import java.util.*;
 import java.util.stream.Collectors;

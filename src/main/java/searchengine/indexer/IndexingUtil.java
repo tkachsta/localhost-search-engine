@@ -8,15 +8,15 @@ import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.dataprocessing.DataProcessor;
-import searchengine.lemmafinder.LemmaFinderService;
-import searchengine.lemmafinder.LemmaService;
-import searchengine.parser.IndexRatioModel;
-import searchengine.parser.ParserService;
-import searchengine.parser.ParserUtil;
-import searchengine.queue.LemmaRepositoryQueueService;
-import searchengine.queue.PageRepositoryQueueService;
-import searchengine.queue.StorageQueue;
+import searchengine.indexer.dataprocessing.DataProcessor;
+import searchengine.indexer.lemmafinder.LemmaFinderService;
+import searchengine.indexer.lemmafinder.LemmaService;
+import searchengine.indexer.parser.IndexRatioModel;
+import searchengine.indexer.parser.ParserService;
+import searchengine.indexer.parser.ParserUtil;
+import searchengine.indexer.queue.LemmaRepositoryQueueService;
+import searchengine.indexer.queue.PageRepositoryQueueService;
+import searchengine.indexer.queue.StorageQueue;
 import java.util.List;
 
 public class IndexingUtil implements Runnable {
@@ -27,7 +27,7 @@ public class IndexingUtil implements Runnable {
     private final Site site;
     private final SiteEntity siteEntity;
     private final PageEntity pageEntity;
-    private final ParserType parserType;
+    private final IndexerType indexerType;
     private final StorageQueue storageQueue;
     private final IndexRatioModel ratioModel;
     private final static StatisticsData statisticsData = new StatisticsData();
@@ -37,14 +37,14 @@ public class IndexingUtil implements Runnable {
                         PageRepository pageRepository,
                         LemmaRepository lemmaRepository,
                         IndexRepository indexRepository,
-                        ParserType parserType,
+                        IndexerType indexerType,
                         Site site, SiteEntity siteEntity,
                         PageEntity pageEntity) {
         this.siteRepository = siteRepository;
         this.pageRepository = pageRepository;
         this.lemmaRepository = lemmaRepository;
         this.indexRepository = indexRepository;
-        this.parserType = parserType;
+        this.indexerType = indexerType;
         this.site = site;
         this.siteEntity = siteEntity;
         this.pageEntity = pageEntity;
@@ -70,7 +70,7 @@ public class IndexingUtil implements Runnable {
         ParserUtil parserUtil = new ParserUtil(
                 siteRepository, pageRepository, lemmaRepository, indexRepository,
                 siteEntity, pageEntity, site, ratioModel, storageQueue.getPageEntityQueueForLemmaService(),
-                parserType, siteStatistic);
+                indexerType, siteStatistic);
         ParserService parser = parserUtil.createParsingInstance();
         Thread threadParser = new Thread(parser::runParsing);
         threadParser.start();
@@ -88,9 +88,9 @@ public class IndexingUtil implements Runnable {
     }
     private Thread startDataProcessingService(Thread lemmaFinderThread) {
         DataProcessor dp = new DataProcessor(
-                        lemmaFinderThread, siteEntity, siteStatistic,
+                        lemmaFinderThread, siteEntity,
                         storageQueue.getPageEntityQueueForPageRepository(),
-                        storageQueue.getQueueForDataProcessor(), parserType);
+                        storageQueue.getQueueForDataProcessor(), indexerType);
         Thread dataProcessor = new Thread(dp);
         dataProcessor.start();
         return dataProcessor;
@@ -98,9 +98,9 @@ public class IndexingUtil implements Runnable {
     private Thread startPageRepositoryQueueService(Thread dataProcessingThread) {
         PageRepositoryQueueService pageRepositoryQueueService =
                 new PageRepositoryQueueService(
-                        pageRepository, dataProcessingThread, parserType,
+                        pageRepository, dataProcessingThread, indexerType,
                         storageQueue.getPageEntityQueueForPageRepository(),
-                        storageQueue.getLemmasEntityQueueForLemmasRepository(), siteStatistic);
+                        storageQueue.getLemmasEntityQueueForLemmasRepository());
         Thread threadPageWriter = new Thread(pageRepositoryQueueService);
         threadPageWriter.start();
         return threadPageWriter;
@@ -110,7 +110,7 @@ public class IndexingUtil implements Runnable {
                 new LemmaRepositoryQueueService(
                         lemmaRepository, indexRepository, siteRepository,
                         siteEntity, pageWriterThread, ratioModel, siteStatistic,
-                        storageQueue.getLemmasEntityQueueForLemmasRepository(), parserType);
+                        storageQueue.getLemmasEntityQueueForLemmasRepository(), indexerType);
         Thread LQS = new Thread(qs);
         LQS.start();
         return LQS;
@@ -121,12 +121,15 @@ public class IndexingUtil implements Runnable {
     private void synchronization() {
         List<DetailedStatisticsItem> statisticsItems = IndexingUtil.getStatisticsData().getDetailed();
         for (DetailedStatisticsItem item : statisticsItems) {
+            if (item.getUrl() == null) {
+                continue;
+            }
             if (item.getUrl().equals(site.getUrl())) {
                 item.resetStatistics();
                 siteStatistic = item;
             }
         }
-        if (siteStatistic == null && parserType != ParserType.SINGLEPAGE) {
+        if (siteStatistic == null && indexerType.getIndexerMode() != IndexerMode.SINGLEPAGE) {
             siteStatistic =  new DetailedStatisticsItem();
             IndexingUtil.getStatisticsData().getDetailed().add(siteStatistic);
         }

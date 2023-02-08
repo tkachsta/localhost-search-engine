@@ -1,6 +1,8 @@
-package searchengine.parser;
+package searchengine.indexer.parser;
 import searchengine.config.Site;
 import searchengine.dto.statistics.DetailedStatisticsItem;
+import searchengine.indexer.IndexerMode;
+import searchengine.indexer.IndexerType;
 import searchengine.model.index.IndexRepository;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageEntity;
@@ -8,7 +10,7 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.IndexingStatus;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.indexer.ParserType;
+
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
@@ -22,7 +24,7 @@ public class ParserUtil {
     private final Site site;
     private final IndexRatioModel ratioModel;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
-    private final ParserType parserType;
+    private final IndexerType indexerType;
     private final DetailedStatisticsItem siteStatistic;
     public ParserUtil(SiteRepository siteRepository,
                       PageRepository pageRepository,
@@ -32,7 +34,7 @@ public class ParserUtil {
                       PageEntity pageEntity, Site site,
                       IndexRatioModel ratioModel,
                       BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService,
-                      ParserType parserType,
+                      IndexerType indexerType,
                       DetailedStatisticsItem siteStatistic) {
         this.siteRepository = siteRepository;
         this.pageRepository = pageRepository;
@@ -43,12 +45,12 @@ public class ParserUtil {
         this.site = site;
         this.ratioModel = ratioModel;
         this.pageEntityQueueForLemmaService = pageEntityQueueForLemmaService;
-        this.parserType = parserType;
+        this.indexerType = indexerType;
         this.siteStatistic = siteStatistic;
     }
 
     public ParserService createParsingInstance() {
-        if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
+        if (indexerType.getIndexerMode() == IndexerMode.RECURSIVE) {
             setupMultipleSitesStatistics();
             return new RecursiveParsingService(siteRepository, site, ratioModel, pageEntityQueueForLemmaService);
         }

@@ -1,4 +1,4 @@
-package searchengine.parser;
+package searchengine.indexer.parser;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -22,7 +22,7 @@ public class RecursiveParsingService implements ParserService {
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
     private static final String[] forbiddenPageEndings = new String[]{"jpg", "jpeg", "JPG", "PDF", "pdf", "png",
             "PNG", "pptx", "docx", "doc", "rar", "avi", "XLSX", "xlsx", "pdf.sig", "zip", "mp4", "MP4", "ppt",
-            "#", "///", "goout"};
+            "#", "///", "goout", "rtf", "dot", "xls", "bmp", "bin"};
     private final Set<String> redis = Collections.synchronizedSet(new HashSet<>());
 
     public RecursiveParsingService(SiteRepository siteRepository,
@@ -193,11 +193,7 @@ public class RecursiveParsingService implements ParserService {
             redis.add(node);
             return true;
         }
-
-
-
     }
-
 }
 
 

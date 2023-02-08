@@ -11,7 +11,7 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
 import searchengine.services.impl.IndexingServiceImpl;
-import searchengine.parser.RecursiveParsingService;
+import searchengine.indexer.parser.RecursiveParsingService;
 
 import java.util.List;
 import java.util.Optional;

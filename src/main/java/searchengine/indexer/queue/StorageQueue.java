@@ -1,4 +1,4 @@
-package searchengine.queue;
+package searchengine.indexer.queue;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import searchengine.model.page.PageEntity;

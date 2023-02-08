@@ -23,7 +23,7 @@ public class SearchController {
             @RequestParam(name = "site", required = false, defaultValue = "") String site) {
         if (query.isEmpty()) {
             return new ResponseEntity<>(new FalseResponse(false, "Задан пустой поисковой запрос"),
-                    HttpStatus.BAD_REQUEST);
+                    HttpStatus.OK);
         }
         return ResponseEntity.ok(searchService.getSearchResult(new SearchRequest(query, site, offset, limit)));
     }

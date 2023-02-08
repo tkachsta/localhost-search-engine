@@ -13,6 +13,7 @@ public class LemmaIndexCouple {
     private List<IndexEntity> indexEntityList;
     private CollectedLemmas collectedLemmas;
     private PageEntity pageEntity;
+    private int lemmaCount;
 }
 
 

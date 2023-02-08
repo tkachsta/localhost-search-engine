@@ -1,11 +1,9 @@
 package searchengine.services;
-
 import searchengine.indexer.IndexingRunningStatus;
-import searchengine.parser.RecursiveParsingService;
+import searchengine.indexer.parser.RecursiveParsingService;
 import searchengine.services.impl.IndexingServiceImpl;
 
 public interface IndexingService {
-
     boolean startMultipleSitesRecursiveIndexing();
     boolean startSinglePageIndexing(String url);
     static boolean terminateIndexing() {
@@ -13,8 +11,7 @@ public interface IndexingService {
             RecursiveParsingService.terminateParsing();
             return true;
         }
-        return true;
+        return false;
     }
-
 
 }

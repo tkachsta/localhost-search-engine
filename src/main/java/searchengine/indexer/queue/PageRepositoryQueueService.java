@@ -1,9 +1,11 @@
-package searchengine.queue;
+package searchengine.indexer.queue;
 import searchengine.dto.statistics.DetailedStatisticsItem;
+import searchengine.indexer.IndexerType;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.dto.indexing.LemmaIndexCouple;
-import searchengine.indexer.ParserType;
+import searchengine.statistic.SiteStatisticUpdate;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -11,64 +13,39 @@ import java.util.concurrent.BlockingQueue;
 
 public class PageRepositoryQueueService implements Runnable {
     private final PageRepository pageRepository;
-    private final ParserType parserType;
+    private final IndexerType indexerType;
     private final Thread parserThread;
     private final BlockingQueue<LemmaIndexCouple> pageEntityQueueForPageRepository;
     private final BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository;
-    private final DetailedStatisticsItem siteStatistic;
     public PageRepositoryQueueService(PageRepository pageRepository,
                                       Thread parserThread,
-                                      ParserType parserType,
+                                      IndexerType indexerType,
                                       BlockingQueue<LemmaIndexCouple> pageEntityQueueForPageRepository,
-                                      BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository,
-                                      DetailedStatisticsItem siteStatistic) {
+                                      BlockingQueue<List<LemmaIndexCouple>> lemmasEntityQueueForLemmasRepository) {
         this.pageRepository = pageRepository;
         this.parserThread = parserThread;
-        this.parserType = parserType;
+        this.indexerType = indexerType;
         this.pageEntityQueueForPageRepository = pageEntityQueueForPageRepository;
         this.lemmasEntityQueueForLemmasRepository = lemmasEntityQueueForLemmasRepository;
-        this.siteStatistic = siteStatistic;
     }
 
     @Override
     public void run() {
-        if (parserType == ParserType.MULTIPLESITES || parserType == ParserType.SINGLESITE) {
-            multiBatchProcessing();
-        } else if (parserType == ParserType.SINGLEPAGE) {
-            singleBatchProcessing();
+        while (parserThread.isAlive() || !pageEntityQueueForPageRepository.isEmpty()) {
+            if (pageEntityQueueForPageRepository.isEmpty()) {
+                continue;
+            }
+            int bath = indexerType.getPageBatchSize();
+            List<LemmaIndexCouple> batchToProcess = batchToProcess(bath);
+            List<PageEntity> listToWrite = collectPageEntityList(batchToProcess);
+            pageRepository.saveAll(listToWrite);
+            try {
+                lemmasEntityQueueForLemmasRepository.put(batchToProcess);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
-    }
-    private void multiBatchProcessing() {
-        while (parserThread.isAlive() || !pageEntityQueueForPageRepository.isEmpty()) {
-            if (pageEntityQueueForPageRepository.isEmpty()) {
-                continue;
-            }
-            List<LemmaIndexCouple> batchToProcess = batchToProcess(50);
-            List<PageEntity> listToWrite = collectPageEntityList(batchToProcess);
-            pageRepository.saveAll(listToWrite);
-            try {
-                lemmasEntityQueueForLemmasRepository.put(batchToProcess);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            siteStatistic.incrementPages(batchToProcess.size());
-        }
-    }
-    private void singleBatchProcessing() {
-        while (parserThread.isAlive() || !pageEntityQueueForPageRepository.isEmpty()) {
-            if (pageEntityQueueForPageRepository.isEmpty()) {
-                continue;
-            }
-            List<LemmaIndexCouple> batchToProcess = batchToProcess(1);
-            List<PageEntity> listToWrite = collectPageEntityList(batchToProcess);
-            pageRepository.saveAll(listToWrite);
-            try {
-                lemmasEntityQueueForLemmasRepository.put(batchToProcess);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
     private List<LemmaIndexCouple> batchToProcess (int batch) {
         List<LemmaIndexCouple> lemmaIndexCoupleList = new ArrayList<>();

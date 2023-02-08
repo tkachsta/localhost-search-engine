@@ -3,9 +3,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
+import searchengine.indexer.IndexerMode;
 import searchengine.indexer.IndexingRunningStatus;
 import searchengine.indexer.IndexingUtil;
-import searchengine.indexer.ParserType;
+import searchengine.indexer.IndexerType;
 import searchengine.model.index.IndexRepository;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageEntity;
@@ -13,11 +14,12 @@ import searchengine.model.site.IndexingStatus;
 import searchengine.model.page.PageRepository;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-import searchengine.parser.RecursiveParsingService;
+import searchengine.indexer.parser.RecursiveParsingService;
 import searchengine.services.IndexingService;
-
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +27,8 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class IndexingServiceImpl implements IndexingService {
     private static IndexingRunningStatus runningStatus = IndexingRunningStatus.IDLE;
+    private static final int availableProcessors = Runtime.getRuntime().availableProcessors();
+    private final ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
@@ -39,18 +43,17 @@ public class IndexingServiceImpl implements IndexingService {
             runningStatus = IndexingRunningStatus.RUNNING;
             RecursiveParsingService.activateParsing();
             for (Site site : sitesList.getSites()) {
-                Thread thread = new Thread(() -> startSingleSiteRecursiveIndexing(site));
-                thread.start();
+                startSingleSiteRecursiveIndexing(site);
             }
         }
         return true;
     }
     public void startSingleSiteRecursiveIndexing(Site site) {
         SiteEntity siteEntity = updateSiteAndPagesOnStart(site);
+        IndexerType indexerType = new IndexerType(IndexerMode.RECURSIVE, 30);
         IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
-                ParserType.SINGLESITE, site, siteEntity, new PageEntity());
-        Thread siteIndexing = new Thread(indexingUtil);
-        siteIndexing.start();
+                indexerType, site, siteEntity, new PageEntity());
+        executorService.submit(indexingUtil);
     }
     @Override
     public boolean startSinglePageIndexing(String url) {
@@ -63,8 +66,9 @@ public class IndexingServiceImpl implements IndexingService {
         SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
         PageEntity pageEntity = pageRepository.findByPath(pageUrl);
         if (urlCheckForIndexing(siteUrl)) {
+            IndexerType indexerType = new IndexerType(IndexerMode.SINGLEPAGE, 1);
             IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
-                    ParserType.SINGLEPAGE, new Site(), siteEntity, pageEntity);
+                    indexerType, new Site(), siteEntity, pageEntity);
             Thread pageIndexing = new Thread(indexingUtil);
             pageIndexing.start();
             return true;

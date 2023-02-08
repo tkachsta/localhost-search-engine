@@ -1,4 +1,4 @@
-package searchengine.parser;
+package searchengine.indexer.parser;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import searchengine.model.index.IndexEntity;

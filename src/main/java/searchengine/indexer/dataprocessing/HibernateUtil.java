@@ -1,4 +1,4 @@
-package searchengine.dataprocessing;
+package searchengine.indexer.dataprocessing;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
