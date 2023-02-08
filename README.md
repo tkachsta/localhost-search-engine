@@ -74,9 +74,11 @@ Since speed and performance was critical that I wanted to make application with 
 - MySQL
 - Maven
 
-## Steps to implement
-1. Create new schema `search_engine` in MySQL WorkBench or similar tool;
-2. In `application.yaml` file set up your connection details under section `spring.datasource`;
-3. In `application.yaml` file set up websites under section `indexing_settings` you want to parse and index for searching
-4. Start SpringBott Application from `Application` class;
-5. In your web-browser enter `http://localhost:8080/`. That's it! Application ready to use on your local host.
+## 5 Easy steps to run application on your localhost if you have Docker application running on your OS
+1. Upload and extract project from GtiHub.
+2. Run cmd (shell, bash and etc.) and navigate straight to the folder `/SearchEngine/`
+3. Run following command to create MySQL image and container:<br>
+`docker container run  --name  mysqldb --network searchengine  -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=search_engine –d mysql:8`<br>
+4. Run following command to create SearchEngine image and container:<br>
+`docker build –t engine_app .; docker container run --name engine_app_container -- network searchengine – p 8080:8080 –d engine_app`<br>
+5. Enter in your web-browser `http://localhost:8080/`. That's it! Application is ready to use :)
