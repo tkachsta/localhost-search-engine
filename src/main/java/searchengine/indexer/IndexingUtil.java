@@ -19,7 +19,9 @@ import searchengine.indexer.queue.PageRepositoryQueueService;
 import searchengine.indexer.queue.StorageQueue;
 import java.util.List;
 
+
 public class IndexingUtil implements Runnable {
+    private final static StatisticsData statisticsData = new StatisticsData();
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
@@ -30,7 +32,6 @@ public class IndexingUtil implements Runnable {
     private final IndexerType indexerType;
     private final StorageQueue storageQueue;
     private final IndexRatioModel ratioModel;
-    private final static StatisticsData statisticsData = new StatisticsData();
     private DetailedStatisticsItem siteStatistic;
 
     public IndexingUtil(SiteRepository siteRepository,
@@ -59,12 +60,13 @@ public class IndexingUtil implements Runnable {
         Thread lemmaFinderThread = startLemmaFinderService(parserThread);
         Thread dataProcessingThread = startDataProcessingService(lemmaFinderThread);
         Thread pageWriterThread = startPageRepositoryQueueService(dataProcessingThread);
-        Thread lemmaIndexWriterThread = startLemmaRepositoryQueueService(pageWriterThread);
+        Thread lemmaWriterThread = startLemmaRepositoryQueueService(pageWriterThread);
         try {
-            lemmaIndexWriterThread.join();
+            lemmaWriterThread.join();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
     }
     private Thread startParserService() {
         ParserUtil parserUtil = new ParserUtil(

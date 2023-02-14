@@ -72,8 +72,10 @@ public class LemmaRepositoryQueueService implements Runnable {
                                     int lemmaCount, int pageCount) {
         lemmaRepository.saveAll(lemmaEntityList);
         indexRepository.saveAll(indexEntityList);
-        siteStatisticUpdate.updatePageCount(pageCount);
-        siteStatisticUpdate.updateLemmaCount(lemmaCount);
+        synchronized (siteStatisticUpdate) {
+            siteStatisticUpdate.updatePageCount(pageCount);
+            siteStatisticUpdate.updateLemmaCount(lemmaCount);
+        }
     }
     private void siteTableUpdateOnFinish() {
         siteEntity.setLastError(indexRatioModel.getIndexRatioModelMessage());

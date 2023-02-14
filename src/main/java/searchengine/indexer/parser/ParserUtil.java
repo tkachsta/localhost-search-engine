@@ -10,11 +10,12 @@ import searchengine.model.page.PageRepository;
 import searchengine.model.site.IndexingStatus;
 import searchengine.model.site.SiteEntity;
 import searchengine.model.site.SiteRepository;
-
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 
+
 public class ParserUtil {
+    private final IndexerType indexerType;
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
@@ -24,7 +25,7 @@ public class ParserUtil {
     private final Site site;
     private final IndexRatioModel ratioModel;
     private final BlockingQueue<List<PageEntity>> pageEntityQueueForLemmaService;
-    private final IndexerType indexerType;
+
     private final DetailedStatisticsItem siteStatistic;
     public ParserUtil(SiteRepository siteRepository,
                       PageRepository pageRepository,

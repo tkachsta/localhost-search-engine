@@ -22,7 +22,7 @@ public class IndexController {
     }
     @GetMapping("/stopIndexing")
     public ResponseEntity<Object> stopIndexing() {
-        if (IndexingService.terminateIndexing()) {
+        if (indexingService.terminateIndexing()) {
             return new ResponseEntity<>(new TrueResponse(true), HttpStatus.OK);
         } else return new ResponseEntity<>(new FalseResponse(false, "индексация не запущена"), HttpStatus.OK);
     }

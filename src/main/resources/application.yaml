@@ -23,8 +23,8 @@ indexing-settings:
       name: Косметика для женщин
     - url: http://school6.m-sk.ru
       name: Гимназия №6, г. Междуреченск
-#    - url: http://playback.ru
-#      name: Online-магазин телефонов
+    - url: http://playback.ru
+      name: Online-магазин телефонов
 #    - url: https://www.playground.ru
 #      name: Портал видеигр
 #    - url: https://www.afisha.ru
@@ -34,9 +34,9 @@ indexing-settings:
     - url: https://tpu.ru
       name: Томский Политехнический Университет
     - url: https://teniteatr.ru
-      name: Детский театр теней
-    - url: http://kirova47.ru
-      name: Детская городска поликлиника
+#      name: Детский театр теней
+#    - url: http://kirova47.ru
+#      name: Детская городска поликлиника
 
 
 

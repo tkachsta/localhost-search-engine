@@ -4,9 +4,9 @@ import org.springframework.stereotype.Service;
 import searchengine.config.Site;
 import searchengine.config.SitesList;
 import searchengine.indexer.IndexerMode;
-import searchengine.indexer.IndexingRunningStatus;
 import searchengine.indexer.IndexingUtil;
 import searchengine.indexer.IndexerType;
+import searchengine.indexer.RunningStatusSync;
 import searchengine.model.index.IndexRepository;
 import searchengine.model.lemma.LemmaRepository;
 import searchengine.model.page.PageEntity;
@@ -20,15 +20,17 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class IndexingServiceImpl implements IndexingService {
-    private static IndexingRunningStatus runningStatus = IndexingRunningStatus.IDLE;
     private static final int availableProcessors = Runtime.getRuntime().availableProcessors();
     private final ExecutorService executorService = Executors.newFixedThreadPool(availableProcessors);
+    private final IndexerType indexerType;
+    public final RunningStatusSync runningStatusSync;
     private final SiteRepository siteRepository;
     private final PageRepository pageRepository;
     private final LemmaRepository lemmaRepository;
@@ -37,23 +39,23 @@ public class IndexingServiceImpl implements IndexingService {
 
     @Override
     public boolean startMultipleSitesRecursiveIndexing() {
-        if (runningStatus == IndexingRunningStatus.RUNNING) {
-            return false;
-        } else {
-            runningStatus = IndexingRunningStatus.RUNNING;
+        if (runningStatusSync.startIsAllowed()) {
             RecursiveParsingService.activateParsing();
             for (Site site : sitesList.getSites()) {
                 startSingleSiteRecursiveIndexing(site);
             }
+            return true;
         }
-        return true;
+        return false;
     }
     public void startSingleSiteRecursiveIndexing(Site site) {
         SiteEntity siteEntity = updateSiteAndPagesOnStart(site);
-        IndexerType indexerType = new IndexerType(IndexerMode.RECURSIVE, 30);
+        indexerType.setIndexerMode(IndexerMode.RECURSIVE);
+        indexerType.setPageBatchSize(30);
         IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
                 indexerType, site, siteEntity, new PageEntity());
-        executorService.submit(indexingUtil);
+        Future<?> f = executorService.submit(indexingUtil);
+        runningStatusSync.getFutures().add(f);
     }
     @Override
     public boolean startSinglePageIndexing(String url) {
@@ -66,11 +68,20 @@ public class IndexingServiceImpl implements IndexingService {
         SiteEntity siteEntity = siteRepository.findByUrl(siteUrl);
         PageEntity pageEntity = pageRepository.findByPath(pageUrl);
         if (urlCheckForIndexing(siteUrl)) {
-            IndexerType indexerType = new IndexerType(IndexerMode.SINGLEPAGE, 1);
+            indexerType.setIndexerMode(IndexerMode.SINGLEPAGE);
+            indexerType.setPageBatchSize(1);
             IndexingUtil indexingUtil = new IndexingUtil(siteRepository, pageRepository, lemmaRepository, indexRepository,
                     indexerType, new Site(), siteEntity, pageEntity);
             Thread pageIndexing = new Thread(indexingUtil);
             pageIndexing.start();
+            return true;
+        }
+        return false;
+    }
+    @Override
+    public boolean terminateIndexing() {
+        if (!runningStatusSync.startIsAllowed()) {
+            RecursiveParsingService.terminateParsing();
             return true;
         }
         return false;
@@ -99,9 +110,8 @@ public class IndexingServiceImpl implements IndexingService {
         }
         return false;
     }
-    public static IndexingRunningStatus getRunningStatus() {
-        return runningStatus;
-    }
+
+
 }
 
 

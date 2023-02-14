@@ -24,7 +24,6 @@ public class RecursiveParsingService implements ParserService {
             "PNG", "pptx", "docx", "doc", "rar", "avi", "XLSX", "xlsx", "pdf.sig", "zip", "mp4", "MP4", "ppt",
             "#", "///", "goout", "rtf", "dot", "xls", "bmp", "bin"};
     private final Set<String> redis = Collections.synchronizedSet(new HashSet<>());
-
     public RecursiveParsingService(SiteRepository siteRepository,
                                    Site site,
                                    IndexRatioModel ratioModel,
@@ -46,17 +45,12 @@ public class RecursiveParsingService implements ParserService {
     }
     @Override
     public void runParsing() {
-
         ForkJoinPool fjp = new ForkJoinPool();
         ForkJoinTask<?> task = new RecursiveParsing(
                 this.site.getUrl(), this.siteEntity, this.ratioModel,
                 this.pageEntityQueueForLemmaService, fjp, redis);
         fjp.invoke(task);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        fjp.shutdown();
     }
     public static void terminateParsing() {
         RecursiveParsing.terminateFjp();
@@ -88,7 +82,6 @@ public class RecursiveParsingService implements ParserService {
 
         @Override
         protected void compute() {
-            ratioModel.incrementCreatedTasks();
             List<RecursiveParsing> taskList = new ArrayList<>();
             try {
                 Connection.Response nodeResponse = getPageResponse(node);
@@ -102,7 +95,6 @@ public class RecursiveParsingService implements ParserService {
                 if (!fjpTermination) {
                     fjp.shutdownNow();
                 }
-                ratioModel.incrementCompletedTask();
             } catch (Exception e) {
                 e.printStackTrace();
             }

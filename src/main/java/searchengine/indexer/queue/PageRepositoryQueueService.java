@@ -1,11 +1,8 @@
 package searchengine.indexer.queue;
-import searchengine.dto.statistics.DetailedStatisticsItem;
 import searchengine.indexer.IndexerType;
 import searchengine.model.page.PageEntity;
 import searchengine.model.page.PageRepository;
 import searchengine.dto.indexing.LemmaIndexCouple;
-import searchengine.statistic.SiteStatisticUpdate;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;

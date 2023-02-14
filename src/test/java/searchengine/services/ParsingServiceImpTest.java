@@ -68,13 +68,8 @@ class ParsingServiceImpTest {
         SiteEntity siteEntity = siteRepository.findByUrl("http://school6.m-sk.ru");
         Optional<PageEntity> pageEntity = pageRepository.findById(id);
         if (pageEntity.isPresent()) {
-            IndexingServiceImpl ws = new IndexingServiceImpl(siteRepository,
-                    pageRepository,
-                    lemmaRepository,
-                    indexRepository,
-                    sitesList);
             String pageURL = siteEntity.getUrl() + pageEntity.get().getPath();
-            ws.startSinglePageIndexing(pageURL);
+            indexingService.startSinglePageIndexing(pageURL);
         }
     }
     @Test
@@ -113,13 +108,7 @@ class ParsingServiceImpTest {
         site5.setName("http://playback.ru");
         sitesList.addSite(site5);
 
-        IndexingServiceImpl ws = new IndexingServiceImpl(
-                siteRepository,
-                pageRepository,
-                lemmaRepository,
-                indexRepository,
-                sitesList);
-        ws.startMultipleSitesRecursiveIndexing();
+        indexingService.startMultipleSitesRecursiveIndexing();
     }
     @Test
     @Order(5)
