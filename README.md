@@ -56,7 +56,8 @@ Since speed and performance was critical that I wanted to make application with 
 - create `Document` after all validation is done. Don't spin logic around `Document` object;
 - don't read from DataBase only write. All validation are spinning around parser service;
 - use concurrent threads which are communicates through message queue of `Queue service`. In the picture below you may say this principle visualized
-![image](https://user-images.githubusercontent.com/20218691/216344291-6578ba13-f676-43e7-8915-66d26702763d.png)
+![image](https://user-images.githubusercontent.com/20218691/219300422-7faba2ba-4907-49df-ae6e-0e903ef5095a.png)
+
 
 ## Implemented Technologies
 - JAVA Collections
